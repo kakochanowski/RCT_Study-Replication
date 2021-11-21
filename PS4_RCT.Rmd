@@ -34,8 +34,28 @@ This exercise uses data from Bryan,Chowdhury, and Mobarak's paper, "Underinvestm
 
 The data can be found by going to Mushfiq Mobarak's Yale faculty page, select "data", and then following the link to the data repository page on the Harvard dataverse. You will need to sign in to get access to the data files. Once logged in, you will find many possible files to download. Navigate to the second page of listed files and download `Mobarak - Monga Dataverse files.zip` which contains all the files we need. 
 
+```{r}
+#Kiersten's WD
+getwd()
+CtrlTable1 <- read_dta("/Users/Kiersten/Documents/School/S2_Causal_Inf/PS4_Kochanowski/Data/Round1_Controls_Table1.dta")
+Round2 <- read_dta("/Users/Kiersten/Documents/School/S2_Causal_Inf/PS4_Kochanowski/Data/Round2.dta")
+basic.data<-as.data.frame(CtrlTable1)
+View(CtrlTable1)
+basic.data<-as.data.frame(Round2)
+View(Round2)
+```
+
 
 ## Question: Loading the data - Load any packages you will need and the data contained in the following files `Round1_Controls_Table1.dta` and `Round2.dta`. How many observations are contained in each of these datasets. What is the level of an observation? Explain any discrepancies between the datasets.**
+
+Packages
+```{r}
+library(haven)
+library(dplyr)
+library(stargazer)
+library(lfe)
+```
+
 
 **Code:**
 
