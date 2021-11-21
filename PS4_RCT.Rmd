@@ -1,0 +1,236 @@
+---
+title: 'Problem Set 4: Randomized Control Trials'
+author: "Claire Duquennois"
+output:
+ html_document:
+    number_sections: true
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+**Name:**
+
+Instructions: 
+
+- This assignment is an individual assignment. You may discuss your responses in small groups or reach out to a classmate if you are having difficulties with coding but your code and answers must reflect your individual efforts and be written using your own words. Identical assignments will be given a zero grade. 
+
+- You must post your code in a private repo on GitHub and invite the TA and I as collaborators. 
+
+- You must update your work on GitHub frequently through commits where we can observe which lines you most recently worked on when we click on the repo history. This is done very easily if you are using Git correctly which is part of what we are assessing with this assignment. Make sure you make at least five commits that highlight your most recent changes. 
+
+
+
+
+# Empirical Analysis using Data from Bryan, G., Chowdury, S., Mobarak, A. M. (2014, Econometrica)
+
+
+This exercise uses data from Bryan,Chowdhury, and Mobarak's paper, "Underinvestment in a Profitable Technology: the Case of Seasonal Migration in Bangladesh," published in *Econometrica* in 2014. This paper studies the effects of seasonal migration on household consumption during the lean season in rural Bangladesh by randomly subsidizing the cost of seasonal migration. 
+
+
+# Set Up: 
+
+## Finding the data
+
+The data can be found by going to Mushfiq Mobarak's Yale faculty page, select "data", and then following the link to the data repository page on the Harvard dataverse. You will need to sign in to get access to the data files. Once logged in, you will find many possible files to download. Navigate to the second page of listed files and download `Mobarak - Monga Dataverse files.zip` which contains all the files we need. 
+
+
+## Question: Loading the data - Load any packages you will need and the data contained in the following files `Round1_Controls_Table1.dta` and `Round2.dta`. How many observations are contained in each of these datasets. What is the level of an observation? Explain any discrepancies between the datasets.**
+
+**Code:**
+
+
+
+**Answer:**
+
+ 
+## Question: Data Description- The dataset contains many variables, some of which are not used in this exercise. Keep the following variables in the final datasets (Hint: use the `select` function in `dplyr`).** 
+
+For Round 1 data:
+
+| Name            |Description                                                             |
+|-----------------|------------------------------------------------------------------------|
+|cash             |In cash treatment group                                                 |
+|credit           |In credit treatment group                                               |
+|info             |In information treatment group                                          |
+|control          |In control group                                                        |
+|q9pdcalq9        |Total calories per person per day                                       | 
+|exp_total_pc_r1  |Total monthly household expenditures per capita                         |
+|hhmembers_r1     |Number of household members                                             |
+|tsaving_hh_r1    |Total household savings                                                  |
+|hhh_education    |Household head is educated                                              |
+|num_adltmalesr1  |Number of adult males in the household                                  |
+
+For Round 2 data:
+
+| Name          |Description                                                             |
+|---------------|------------------------------------------------------------------------|
+|cash           |In cash treatment group                                                 |
+|credit         |In credit treatment group                                               |
+|info           |In information treatment group                                          |
+|control        |In control group                                                        |
+|average_exp2   |Total consumption per person per month in round 2                       |
+|lit            |Highest reading and writing ability of household                        |
+|walls_good     |Wall material (income proxy)                                            |
+|monga          |Subjective expectations about monga at baseline                         |
+|dhaka_remit    |Subjective expectations about migration remitances at baseline          |
+|dhaka_network  |Subjective expectations about social network in city at baseline        |
+|exp_total_pc_r1|Total household expenditures per capita at baseline                     |
+|subsistencer1  |Share of food out of total expenditures at baseline                     |
+|num_adltmalesr1|Household adult males at baseline                                       |
+|num_childrenr1 |Household small children at baseline                                    |
+|avgQ13earned   |Average skill score of network                                          |
+|constrainedr1  |Denied or ineligible for credit at baseline                             |
+|bankedr1       |Has received credit at baseline                                         |
+|upazila        |Sub-district name                                                       |
+|village        |Village name                                                            |
+|migrant        |Member of household migrates this season                                |
+|total_fish     |Total monthly household expenditures per capita on fish                 |
+|migrant_new    |Household has a first time migrant this season                          |
+
+
+
+**A description of each variable should appear in the column headers of the loaded data. **
+
+**Code:**
+
+# Analysis:
+
+## **Question: Regress all the baseline household characteristics still included in the round 1 data  on the following three variables: $cash_i$, $credit_i$ and $info_i$, and present your results in a table. What is the equivalent table in the paper?** 
+
+**Code:**
+
+
+**Answer:** 
+
+
+## **Question: How should the coefficients in the table above be interpreted? What should we look for in this table?**
+
+**Answer:**
+
+
+## **Question: Using the round 2 data, regress migrant on the treatment arm indicators. What is the equivalent table in the paper?**
+
+**Code:**
+
+**Answer:** 
+
+
+## **Question: How should the coefficients in the table above be interpreted? Why is this table important?**
+
+**Answer:**
+
+
+## **Question: What is the underlying migration rate in the control group and how might this change our interpretation of the results? **
+
+**Answer:**
+
+
+## **Question: Replicate the results presented in the third row of the first three columns of table 3. Present them in a table and interpret these results. **
+
+Note 1: The authors elect to drop one household observation because the reported value of total fish consumed in the household is very high. 
+
+Note 2: To replicate the standard errors in the paper you will need to cluster your standard errors at the village level. We will discuss clustering later in the semester.  Using `felm` you can specify the level of clustering (`clustervariable`) using the following command:
+
+`reg<-felm(Y~x1|fevariables|(ivfirststage)|clustervariable, dataname)` 
+
+where you can replace fevariables and ivfirststage with 0 if you are not using fixed effects or an instrument. 
+
+
+**Code:**
+
+
+
+
+**Answer:**
+
+
+## **Question: What happens to these estimates if you drop the fixed effects from the specification. Why? **
+
+**Code:**
+
+
+**Answer:**
+
+
+
+## **Question: Replicate the results presented in the third row of the fourth and fifth columns of table 3. What happens to the coefficient and standard errors? Is this surprising? What does this tell us?**
+
+Hint: You will need to construct a new variable to run these estimates. 
+
+
+**Code:**
+
+
+
+**Answer:**
+
+
+## **Question: Why is the header of the first five columns of table 3 "ITT". What is meant by this and what does this tell us about how we should interpret these results?**
+
+**Answer:**
+
+
+## **Question: We are interested in estimating how migration affects total expenditures for the households that were induced to migrate by the cash and credit treatments as follows,**
+
+$$
+TotExp_{ivj}=\alpha+\beta_1Migrate_{ivj}+\theta X_{ivj}+\varphi_j+\nu_{ivj}
+$$
+**where $Migrate_{ivj}$ is dummy indicator for if a member of household i in village v in subdistrict j migrated, $X_{ivj}$ is a vector of control variables and $\varphi_j$ are the subdistrict fixed effects. However it is not possible to identify in the data which households were induced by the treatment vs those who would have migrated  either way. Furthermore, there is likely substantial selection between the households that select into migration versus those that do not. Propose a source of exogenous variation that can be used as an instrument to isolate "good" exogenous variation in migration. **
+
+**Answer:**
+ 
+
+## **Question: What is the first stage specification?**
+
+**Answer:**
+
+
+## **Question: Estimate the first stage and check that you have a strong instrument for migration.**
+
+ Note: The first stage results reported in the paper appendix may differ slightly as explained in the table footnote.  
+
+**Code:**
+
+
+**Answer:**
+
+
+## **Question: Use your instrument to estimate the LATE (Local Average Treatment Effect), the impact of migration on total consumption for those induced to migrate by the treatment, as in columns 6 and 7 of table 3 in the paper. Interpret your results. **
+
+Note: if you wish to replicate the paper's coefficients exactly, you will need to use multiple instruments, one for each treatment arm.
+
+**Code:**
+
+
+**Answer:**
+
+
+
+## **Question: Why are these results different from those in columns 4 and 5 of the paper?  **
+
+**Answer:** 
+
+
+## **Question: Why is this value particularly relevant for policy decisions in the context of this experiment.**
+
+**Answer:**
+
+
+## **Question: Suppose a policy maker found these results so compelling that they decided to make this a national policy. How would general equilibrium effects potentially change the impacts of this policy if it was implemented in a very large scale way?**
+
+**Answer:**
+
+
+## **Question: One major concern that is often brought up in discussions about RCT's is the problem of external validity. It is not always clear how informative the findings from a small scale research project in one context are for policy makers working on a different scale and in different contexts. What are your thoughts on the external validity of this particular project and RCT's in general? **
+
+**Answer:**
+
+
+# Submission instructions:
+
+1) Make sure the final version of your assignment is uploaded on GitHub in both html and Rmarkdown format. 
+
+
+
+
