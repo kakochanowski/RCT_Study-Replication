@@ -143,7 +143,7 @@ stargazer(r1, r2, r3, type="text", header=FALSE, title="Randomization Balance on
 ```
 
 **Answer:** 
-This table is determining whether there are any biases in the groups (control and experimental) at baseline. It mirrors Table 1 in the paper.
+This is a balance table which reveals whether there are any biases in the groups (control and experimental) at baseline. It mirrors Table 1 in the paper.
 
 ## **Question 4: How should the coefficients in the table above be interpreted? What should we look for in this table?**
 
@@ -154,10 +154,11 @@ We are looking to see whether there are statistically significant relationships 
 
 **Code:**
 ```{r, Q5, results ='asis'}
-r4 <- felm(data=Round2_f, cash ~ migrant + migrant_new)
-r5 <- felm(data=Round2_f, credit ~ migrant + migrant_new)
-r6 <- felm(data=Round2_f, info ~ migrant + migrant_new)
-r7 <- felm(data=Round2_f, control ~ migrant + migrant_new)
+r4 <- felm(data=Round2_f, cash ~ migrant)
+r5 <- felm(data=Round2_f, credit ~ migrant)
+r6 <- felm(data=Round2_f, info ~ migrant)
+r7 <- felm(data=Round2_f, control ~ migrant)
+
 
 stargazer(r4, r5, r6, r7, type="text", header=FALSE, title="Program Participation Rates", 
                      style="qje", 
@@ -182,7 +183,7 @@ This table is important in order to determine whether incentives had an impact o
 **Answer:**
 
 
-## **Question 8: Replicate the results presented in the third row of the first three columns of table 3. Present them in a table and interpret these results. **
+## **Question 8: Replicate the results presented in the third row of the first three columns of table 3. Present them in a table and interpret these results.**
 
 Note 1: The authors elect to drop one household observation because the reported value of total fish consumed in the household is very high. 
 
@@ -191,6 +192,8 @@ Note 2: To replicate the standard errors in the paper you will need to cluster y
 `reg<-felm(Y~x1|fevariables|(ivfirststage)|clustervariable, dataname)` 
 
 where you can replace fevariables and ivfirststage with 0 if you are not using fixed effects or an instrument. 
+
+Upizila fixed effect
 
 Total consumption ~ cash, credit, info
 
@@ -212,18 +215,17 @@ max(Round2_f_sub$total_fish)
 
 ```{r}
 #Model
-r8<-felm(average_exp2~cash+credit+info|0|0|village, data=Round2_f_sub)
+r8<-felm(average_exp2~cash+credit+info|upazila|0|village, data=Round2_f_sub)
 summary(r8)
 ```
 
-
 ```{r, Q8, results ='asis'}
 #Save cluster robust standard errors
-cluster_se <- as.vector(summary(r8,cluster = c("village"))$coefficients[,"Cluster s.e."])
+cluster_se8 <- as.vector(summary(r8,cluster = c("village"))$coefficients[,"Cluster s.e."])
 
 stargazer(r8, type="text", header=FALSE, title="Effects of Migration on Consumption Among Remaining Household Members", 
                      style="qje", 
-                     se = list(cluster_se),
+                     se = list(r8$cluster_se8),
                      covariate.labels = c("Cash", "Credit", "Info"),
                      dep.var.labels.include = FALSE,
                      omit = "Constant",
@@ -239,15 +241,16 @@ stargazer(r8, type="text", header=FALSE, title="Effects of Migration on Consumpt
 **Code:**
 
 ```{r}
-r9<-felm(average_exp2~cash+credit+info, data=Round2_f_sub)
+r9<-felm(average_exp2~cash+credit+info|0|0|village, data=Round2_f_sub)
 summary(r9)
+
+cluster_se9 <- as.vector(summary(r9,cluster = c("village"))$coefficients[,"Cluster s.e."])
 ```
 
-
 ```{r, Q9, results ='asis'}
-stargazer(r9, type="text", header=FALSE, title="Effects of Migration on Consumption Among Remaining Household Members", 
+stargazer(r8, r9, type="text", header=FALSE, title="Effects of Migration on Consumption Among Remaining Household Members", 
                      style="qje", 
-                     se = NULL,
+                     se = list(r8$cluster_se8, r9$cluster_se9),
                      covariate.labels = c("Cash", "Credit", "Info"),
                      dep.var.labels.include = FALSE,
                      omit = "Constant",
@@ -262,17 +265,45 @@ stargazer(r9, type="text", header=FALSE, title="Effects of Migration on Consumpt
 
 Hint: You will need to construct a new variable to run these estimates. 
 
+ + walls_good + subsistencer1 + num_adltmalesr1 + num_childrenr1 + exp_total_pc_r1 + bankedr1, 
 
 **Code:**
+```{r}
+#Constructing ITT variable
+Round2_f_sub$ITT<-0
+Round2_f_sub$ITT[Round2_f_sub$cash=="1"]<-1
+Round2_f_sub$ITT[Round2_f_sub$credit=="1"]<-1
 
+#Model with ITT
+r10 <- felm(average_exp2~ITT|upazila|0|village, data=Round2_f_sub)
+cluster_se10 <- as.vector(summary(r10,cluster = c("village"))$coefficients[,"Cluster s.e."])
+
+#Model with ITT and following controls: household education, proxy for income, pctg of total expenditure on food, number of adult males, number of children, lacked access to credit, borrowing, total household expenditures/capita at baseline, expectations of support
+r11 <- felm(average_exp2 ~ ITT + + walls_good + subsistencer1 + num_adltmalesr1 + num_childrenr1 + bankedr1 + exp_total_pc_r1 + monga + dhaka_network + constrainedr1|upazila|0|village, data=Round2_f_sub)
+cluster_se11 <- as.vector(summary(r11,cluster = c("village"))$coefficients[,"Cluster s.e."])
+```
+
+
+Display results
+```{r, Q10, results='asis'}
+stargazer(r10, r11, type="text", header=FALSE, title="Effects of Migration on Consumption Among Remaining Household Members", 
+                     style="qje", 
+                     se = list(r10$cluster_se10, r11$cluster_se11),
+                     covariate.labels = c("Intent to Treat"),
+                     dep.var.labels.include = FALSE,
+                     omit = c("Constant", "walls_good", "subsistencer1", "num_adltmalesr1", "num_childrenr1", "bankedr1", "exp_total_pc_r1", "monga", "dhaka_network", "constrainedr1"),
+                     column.labels = c("Total consumption", "Total consumption"),
+                     add.lines = list(c("Additional controls", "No", "Yes")))
+```
 
 
 **Answer:**
-
+Given that the significance and magnitude of the ITT coefficient doesn't change much when controlling for baseline characteristics, the results/relationship is robust between ITT and total consumption.
 
 ## **Question 11: Why is the header of the first five columns of table 3 "ITT". What is meant by this and what does this tell us about how we should interpret these results?**
 
 **Answer:**
+The header represents the relationship between households assigned to some treatment and their food consumption (excludes households in the control group). ITT stands for "intent to treat" which has a different meaning than the effect of being treated. Instead, its the effect of being assigned to the treatment group which means some households may not comply (and their actions are accounted for in the average ITT effect). 
 
 
 ## **Question 12: We are interested in estimating how migration affects total expenditures for the households that were induced to migrate by the cash and credit treatments as follows,**
