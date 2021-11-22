@@ -138,6 +138,7 @@ stargazer(r1, r2, r3, type="text", header=FALSE, title="Randomization Balance on
                      style="qje", 
                      se = list(r1$rse, r2$rse, r3$rse),
                      column.labels = c("Cash Group", "Credit Group", "Info Group"),
+                     omit = "Constant",
                      covariate.labels = c("Household Size", "Head of House Educ.", "Number of Adult Males"))
 ```
 
@@ -152,17 +153,18 @@ We are looking to see whether there are statistically significant relationships 
 ## **Question 5: Using the round 2 data, regress migrant on the treatment arm indicators. What is the equivalent table in the paper?**
 
 **Code:**
-```{r}
-r4 <- felm(data=Round2_f, cash ~ migrant)
-r5 <- felm(data=Round2_f, credit ~ migrant)
-r6 <- felm(data=Round2_f, info ~ migrant)
-r7 <- felm(data=Round2_f, control ~ migrant)
+```{r, Q5, results ='asis'}
+r4 <- felm(data=Round2_f, cash ~ migrant + migrant_new)
+r5 <- felm(data=Round2_f, credit ~ migrant + migrant_new)
+r6 <- felm(data=Round2_f, info ~ migrant + migrant_new)
+r7 <- felm(data=Round2_f, control ~ migrant + migrant_new)
 
 stargazer(r4, r5, r6, r7, type="text", header=FALSE, title="Program Participation Rates", 
                      style="qje", 
                      se = list(r4$rse, r5$rse, r6$rse, r7$rse),
                      covariate.labels = c("Migrant"),
                      dep.var.labels.include = TRUE,
+                     omit = "Constant",
                      column.labels = c("Incentivized", "Not Incentivized"),
                      column.separate = c(2,2))
 ```
@@ -190,10 +192,43 @@ Note 2: To replicate the standard errors in the paper you will need to cluster y
 
 where you can replace fevariables and ivfirststage with 0 if you are not using fixed effects or an instrument. 
 
+Total consumption ~ cash, credit, info
 
 **Code:**
 
+```{r}
+#Cluster package
+install.packages("cluster")
+library(cluster)
+```
 
+```{r}
+#Drop outlier
+max(Round2_f$total_fish)
+Round2_f_sub <- Round2_f[-c(92),]
+max(Round2_f_sub$total_fish)
+
+```
+
+```{r}
+#Model
+r8<-felm(average_exp2~cash+credit+info|0|0|village, data=Round2_f_sub)
+summary(r8)
+```
+
+
+```{r, Q8, results ='asis'}
+#Save cluster robust standard errors
+cluster_se <- as.vector(summary(r8,cluster = c("village"))$coefficients[,"Cluster s.e."])
+
+stargazer(r8, type="text", header=FALSE, title="Effects of Migration on Consumption Among Remaining Household Members", 
+                     style="qje", 
+                     se = list(cluster_se),
+                     covariate.labels = c("Cash", "Credit", "Info"),
+                     dep.var.labels.include = FALSE,
+                     omit = "Constant",
+                     column.labels = c("Total consumption"))
+```
 
 
 **Answer:**
@@ -203,6 +238,21 @@ where you can replace fevariables and ivfirststage with 0 if you are not using f
 
 **Code:**
 
+```{r}
+r9<-felm(average_exp2~cash+credit+info, data=Round2_f_sub)
+summary(r9)
+```
+
+
+```{r, Q9, results ='asis'}
+stargazer(r9, type="text", header=FALSE, title="Effects of Migration on Consumption Among Remaining Household Members", 
+                     style="qje", 
+                     se = NULL,
+                     covariate.labels = c("Cash", "Credit", "Info"),
+                     dep.var.labels.include = FALSE,
+                     omit = "Constant",
+                     column.labels = c("Total consumption"))
+```
 
 **Answer:**
 
