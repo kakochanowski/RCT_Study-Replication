@@ -181,6 +181,7 @@ This table is important in order to determine whether incentives had an impact o
 ## **Question 7: What is the underlying migration rate in the control group and how might this change our interpretation of the results? **
 
 **Answer:**
+Although my table's results aren't accurate, the migration rate in the control group is ~36% which means when we look at the effect of treatment, we must look at the change in migration rate with and without treatment relative to a baseline of 36%.
 
 
 ## **Question 8: Replicate the results presented in the third row of the first three columns of table 3. Present them in a table and interpret these results.**
@@ -265,8 +266,6 @@ stargazer(r8, r9, type="text", header=FALSE, title="Effects of Migration on Cons
 
 Hint: You will need to construct a new variable to run these estimates. 
 
- + walls_good + subsistencer1 + num_adltmalesr1 + num_childrenr1 + exp_total_pc_r1 + bankedr1, 
-
 **Code:**
 ```{r}
 #Constructing ITT variable
@@ -279,7 +278,7 @@ r10 <- felm(average_exp2~ITT|upazila|0|village, data=Round2_f_sub)
 cluster_se10 <- as.vector(summary(r10,cluster = c("village"))$coefficients[,"Cluster s.e."])
 
 #Model with ITT and following controls: household education, proxy for income, pctg of total expenditure on food, number of adult males, number of children, lacked access to credit, borrowing, total household expenditures/capita at baseline, expectations of support
-r11 <- felm(average_exp2 ~ ITT + + walls_good + subsistencer1 + num_adltmalesr1 + num_childrenr1 + bankedr1 + exp_total_pc_r1 + monga + dhaka_network + constrainedr1|upazila|0|village, data=Round2_f_sub)
+r11 <- felm(average_exp2 ~ ITT + walls_good + subsistencer1 + num_adltmalesr1 + num_childrenr1 + bankedr1 + exp_total_pc_r1 + monga + dhaka_network + constrainedr1 + bankedr1|upazila|0|village, data=Round2_f_sub)
 cluster_se11 <- as.vector(summary(r11,cluster = c("village"))$coefficients[,"Cluster s.e."])
 ```
 
@@ -314,21 +313,43 @@ $$
 **where $Migrate_{ivj}$ is dummy indicator for if a member of household i in village v in subdistrict j migrated, $X_{ivj}$ is a vector of control variables and $\varphi_j$ are the subdistrict fixed effects. However it is not possible to identify in the data which households were induced by the treatment vs those who would have migrated  either way. Furthermore, there is likely substantial selection between the households that select into migration versus those that do not. Propose a source of exogenous variation that can be used as an instrument to isolate "good" exogenous variation in migration. **
 
 **Answer:**
+We know the assignment of treatment was random given the controlled experiment. This ITT variable can be a source of good, exogenous variation on the action of migrating (the true action/treatment we're trying to capture).
  
 
 ## **Question 13: What is the first stage specification?**
 
 **Answer:**
+We must determine whether there's a strong relationship between ITT and migration.
+$$
+Migrant_{ivj}=\alpha+\beta_1ITT_{ivj}+\nu_{ivj}+\epsilon_{ivj}
+$$
 
+Where migrant is a binary variable, beta is the indicator for whether or not household was assigned to treatment (incentive) and v represents baseline controls
 
 ## **Question 14: Estimate the first stage and check that you have a strong instrument for migration.**
 
- Note: The first stage results reported in the paper appendix may differ slightly as explained in the table footnote.  
+Note: The first stage results reported in the paper appendix may differ slightly as explained in the table footnote.  
 
 **Code:**
+```{r, Q14, results='asis'}
 
+#Checking strong first stage
+r12 <- felm(data=Round2_f_sub, migrant ~ ITT)
+r13 <- felm(data=Round2_f_sub, migrant ~ cash)
+r14 <- felm(data=Round2_f_sub, migrant ~ credit)
+
+#Displaying results
+stargazer(r12, r13, r14, type="text", header=FALSE, title="Relationship between Treatment Assignment & Migration", 
+                     style="qje", 
+                     se = list(r12$rse, r13$rse, r14$rse),
+                     covariate.labels = c("Intent to treat", "Cash", "Credit", "Info"),
+                     dep.var.labels.include = FALSE,
+                     omit = "Constant",
+                     column.labels = c("Migration", "Migration", "Migration"))
+```
 
 **Answer:**
+The first stages are strong for each of the IVs (ITT, cash, and credit all against their relationship to migration) given the statistical significance. The magnitude of the coefficients is also helpful when we rely on the exogenous variation's impact on independent var migration (and ultimately its impact on total consumption).
 
 
 ## **Question 15: Use your instrument to estimate the LATE (Local Average Treatment Effect), the impact of migration on total consumption for those induced to migrate by the treatment, as in columns 6 and 7 of table 3 in the paper. Interpret your results. **
@@ -336,30 +357,45 @@ $$
 Note: if you wish to replicate the paper's coefficients exactly, you will need to use multiple instruments, one for each treatment arm.
 
 **Code:**
+```{r}
+r15 <- felm(data=Round2_f_sub, average_exp2 ~ 1 |upazila|(migrant~ITT)|village) 
+r16 <- felm(data=Round2_f_sub, average_exp2 ~ walls_good + subsistencer1 + num_adltmalesr1 + num_childrenr1 + bankedr1 + exp_total_pc_r1 + monga + dhaka_network + constrainedr1 + bankedr1|upazila|(migrant~ITT + walls_good + subsistencer1 + num_adltmalesr1 + num_childrenr1 + bankedr1 + exp_total_pc_r1 + monga + dhaka_network + constrainedr1 + bankedr1)|village)
+
+```
+
+```{r, Q14, results='asis'}
+stargazer(r15, r16, type="text", header=FALSE, title="Local Average Treatment Effect of Migration on Total Consumption", 
+                     style="qje", 
+                     se = list(r15$rse, r16$rse),
+                     dep.var.labels.include = TRUE,
+                     omit = c("upazila", "Constant", "walls_good", "subsistencer1", "num_adltmalesr1", "num_childrenr1", "bankedr1", "exp_total_pc_r1", "monga", "dhaka_network", "constrainedr1", "bankedr1"),
+                     column.labels = c("Total Consumption", "Total Consumption"))
+```
 
 
 **Answer:**
 
 
 
-## **Question 16: Why are these results different from those in columns 4 and 5 of the paper?  **
+## **Question 16: Why are these results different from those in columns 4 and 5 of the paper?**
 
 **Answer:** 
-
+The LATE results are different from the previous regressions (ITT) because they estimate the effect of treatment(migration) and not just he effect of being in the treatment group (which is susceptible to non-compliers). 
 
 ## **Question 17: Why is this value particularly relevant for policy decisions in the context of this experiment.**
 
 **Answer:**
-
+If policy makers were to apply the findings of this research in the real world, they'd likely be concerned with both the LATE and ITT estimators. The LATE will help policy makers determine whether migration is a worthwhile tool to help bring more economic stability to households vulnerable to poverty during monga season. The ITT estimator provides an idea of how public assistance in support of migration may impact behavior and outcomes for households, taking into account that not everyone will behave as the program would like.
 
 ## **Question 18: Suppose a policy maker found these results so compelling that they decided to make this a national policy. How would general equilibrium effects potentially change the impacts of this policy if it was implemented in a very large scale way?**
 
 **Answer:**
-
+If a national policy was implemented, mass migration could affect the amount of jobs available in cities (whereas with an RCT the volume of individuals migrating doesn't impact the GE) which could greatly impact the effectivity of temporary migration into cities in order to earn more money when jobs are scarce in local villages.
 
 ## **Question 19: One major concern that is often brought up in discussions about RCT's is the problem of external validity. It is not always clear how informative the findings from a small scale research project in one context are for policy makers working on a different scale and in different contexts. What are your thoughts on the external validity of this particular project and RCT's in general? **
 
 **Answer:**
+I think if this RCT was to be rolled out on a national level the same results may be more difficult to achieve (like all RCT applications) for a few reasons: NGOs may have more resources, less beauracy, and benefit from a smaller scale to manage these trials compared to government agencies (aka pilot bias)  
 
 
 # Submission instructions:
