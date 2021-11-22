@@ -37,16 +37,16 @@ The data can be found by going to Mushfiq Mobarak's Yale faculty page, select "d
 ```{r}
 #Kiersten's WD
 getwd()
-CtrlTable1 <- read_dta("/Users/Kiersten/Documents/School/S2_Causal_Inf/PS4_Kochanowski/Data/Round1_Controls_Table1.dta")
+Round1_Ctrl <- read_dta("/Users/Kiersten/Documents/School/S2_Causal_Inf/PS4_Kochanowski/Data/Round1_Controls_Table1.dta")
 Round2 <- read_dta("/Users/Kiersten/Documents/School/S2_Causal_Inf/PS4_Kochanowski/Data/Round2.dta")
-basic.data<-as.data.frame(CtrlTable1)
-View(CtrlTable1)
-basic.data<-as.data.frame(Round2)
+Round1_Ctrl <- as.data.frame(Round1_Ctrl)
+View(Round1_Ctrl)
+Round2 <- as.data.frame(Round2)
 View(Round2)
 ```
 
 
-## Question: Loading the data - Load any packages you will need and the data contained in the following files `Round1_Controls_Table1.dta` and `Round2.dta`. How many observations are contained in each of these datasets. What is the level of an observation? Explain any discrepancies between the datasets.**
+## Question 1: Loading the data - Load any packages you will need and the data contained in the following files `Round1_Controls_Table1.dta` and `Round2.dta`. How many observations are contained in each of these datasets. What is the level of an observation? Explain any discrepancies between the datasets.**
 
 Packages
 ```{r}
@@ -58,13 +58,17 @@ library(lfe)
 
 
 **Code:**
-
-
+```{r}
+summary(Round1_Ctrl)
+nrow(Round1_Ctrl)
+summary(Round2)
+nrow(Round2)
+```
 
 **Answer:**
-
+There are 1900 observations in the Control Table 1 data frame and 1907 observations in the Round 2 data frame.
  
-## Question: Data Description- The dataset contains many variables, some of which are not used in this exercise. Keep the following variables in the final datasets (Hint: use the `select` function in `dplyr`).** 
+## Question 2: Data Description- The dataset contains many variables, some of which are not used in this exercise. Keep the following variables in the final datasets (Hint: use the `select` function in `dplyr`).** 
 
 For Round 1 data:
 
@@ -80,6 +84,13 @@ For Round 1 data:
 |tsaving_hh_r1    |Total household savings                                                  |
 |hhh_education    |Household head is educated                                              |
 |num_adltmalesr1  |Number of adult males in the household                                  |
+
+Code
+```{r}
+Round1_f <- select(Round1_Ctrl, cash, credit, info, control, q9pdcalq9, exp_total_pc_r1, hhmembers_r1, tsaving_hh_r1, hhh_education, num_adltmalesr1)
+View(Round1_f)
+```
+
 
 For Round 2 data:
 
@@ -108,45 +119,68 @@ For Round 2 data:
 |total_fish     |Total monthly household expenditures per capita on fish                 |
 |migrant_new    |Household has a first time migrant this season                          |
 
-
-
-**A description of each variable should appear in the column headers of the loaded data. **
-
-**Code:**
+```{r}
+Round2_f <- select(Round2, cash, credit, info, control,average_exp2, lit, walls_good, monga, dhaka_remit, dhaka_network, exp_total_pc_r1, subsistencer1, num_adltmalesr1, num_childrenr1, avgQ13earned, constrainedr1, bankedr1, upazila, village, migrant, total_fish, migrant_new)
+View(Round2_f)
+```
 
 # Analysis:
 
-## **Question: Regress all the baseline household characteristics still included in the round 1 data  on the following three variables: $cash_i$, $credit_i$ and $info_i$, and present your results in a table. What is the equivalent table in the paper?** 
+## **Question 3: Regress all the baseline household characteristics still included in the round 1 data  on the following three variables: $cash_i$, $credit_i$ and $info_i$, and present your results in a table. What is the equivalent table in the paper?** 
 
 **Code:**
+```{r, Q3, results ='asis'}
+r1 <- felm(data=Round1_f, cash ~ hhmembers_r1 + hhh_education + num_adltmalesr1)
+r2 <- felm(data=Round1_f, credit ~ hhmembers_r1 + hhh_education + num_adltmalesr1)
+r3 <- felm(data=Round1_f, info ~ hhmembers_r1 + hhh_education + num_adltmalesr1)
 
+stargazer(r1, r2, r3, type="text", header=FALSE, title="Randomization Balance on Observables at Baseline", 
+                     style="qje", 
+                     se = list(r1$rse, r2$rse, r3$rse),
+                     column.labels = c("Cash Group", "Credit Group", "Info Group"),
+                     covariate.labels = c("Household Size", "Head of House Educ.", "Number of Adult Males"))
+```
 
 **Answer:** 
+This table is determining whether there are any biases in the groups (control and experimental) at baseline. It mirrors Table 1 in the paper.
 
-
-## **Question: How should the coefficients in the table above be interpreted? What should we look for in this table?**
+## **Question 4: How should the coefficients in the table above be interpreted? What should we look for in this table?**
 
 **Answer:**
+We are looking to see whether there are statistically significant relationships between the observable pre-treatment characteristics and the groups households were assigned to. If any of these were significant, it could indicate that the assignment of groups was not random (or that it is coincidence per statistical chance). In our case, none of the coefficients are significant which means assignment was random and balanced across groups.
 
-
-## **Question: Using the round 2 data, regress migrant on the treatment arm indicators. What is the equivalent table in the paper?**
+## **Question 5: Using the round 2 data, regress migrant on the treatment arm indicators. What is the equivalent table in the paper?**
 
 **Code:**
+```{r}
+r4 <- felm(data=Round2_f, cash ~ migrant)
+r5 <- felm(data=Round2_f, credit ~ migrant)
+r6 <- felm(data=Round2_f, info ~ migrant)
+r7 <- felm(data=Round2_f, control ~ migrant)
+
+stargazer(r4, r5, r6, r7, type="text", header=FALSE, title="Program Participation Rates", 
+                     style="qje", 
+                     se = list(r4$rse, r5$rse, r6$rse, r7$rse),
+                     covariate.labels = c("Migrant"),
+                     dep.var.labels.include = TRUE,
+                     column.labels = c("Incentivized", "Not Incentivized"),
+                     column.separate = c(2,2))
+```
 
 **Answer:** 
+This mirrors Table 2 in the paper titled "Program Up-Take Rates"
 
+## **Question 6: How should the coefficients in the table above be interpreted? Why is this table important?**
 
-## **Question: How should the coefficients in the table above be interpreted? Why is this table important?**
+**Answer:**
+This table is important in order to determine whether incentives had an impact on households' decisions to migrate during the manga.
+
+## **Question 7: What is the underlying migration rate in the control group and how might this change our interpretation of the results? **
 
 **Answer:**
 
 
-## **Question: What is the underlying migration rate in the control group and how might this change our interpretation of the results? **
-
-**Answer:**
-
-
-## **Question: Replicate the results presented in the third row of the first three columns of table 3. Present them in a table and interpret these results. **
+## **Question 8: Replicate the results presented in the third row of the first three columns of table 3. Present them in a table and interpret these results. **
 
 Note 1: The authors elect to drop one household observation because the reported value of total fish consumed in the household is very high. 
 
@@ -165,7 +199,7 @@ where you can replace fevariables and ivfirststage with 0 if you are not using f
 **Answer:**
 
 
-## **Question: What happens to these estimates if you drop the fixed effects from the specification. Why? **
+## **Question 9: What happens to these estimates if you drop the fixed effects from the specification. Why? **
 
 **Code:**
 
@@ -174,7 +208,7 @@ where you can replace fevariables and ivfirststage with 0 if you are not using f
 
 
 
-## **Question: Replicate the results presented in the third row of the fourth and fifth columns of table 3. What happens to the coefficient and standard errors? Is this surprising? What does this tell us?**
+## **Question 10: Replicate the results presented in the third row of the fourth and fifth columns of table 3. What happens to the coefficient and standard errors? Is this surprising? What does this tell us?**
 
 Hint: You will need to construct a new variable to run these estimates. 
 
@@ -186,12 +220,12 @@ Hint: You will need to construct a new variable to run these estimates.
 **Answer:**
 
 
-## **Question: Why is the header of the first five columns of table 3 "ITT". What is meant by this and what does this tell us about how we should interpret these results?**
+## **Question 11: Why is the header of the first five columns of table 3 "ITT". What is meant by this and what does this tell us about how we should interpret these results?**
 
 **Answer:**
 
 
-## **Question: We are interested in estimating how migration affects total expenditures for the households that were induced to migrate by the cash and credit treatments as follows,**
+## **Question 12: We are interested in estimating how migration affects total expenditures for the households that were induced to migrate by the cash and credit treatments as follows,**
 
 $$
 TotExp_{ivj}=\alpha+\beta_1Migrate_{ivj}+\theta X_{ivj}+\varphi_j+\nu_{ivj}
@@ -201,12 +235,12 @@ $$
 **Answer:**
  
 
-## **Question: What is the first stage specification?**
+## **Question 13: What is the first stage specification?**
 
 **Answer:**
 
 
-## **Question: Estimate the first stage and check that you have a strong instrument for migration.**
+## **Question 14: Estimate the first stage and check that you have a strong instrument for migration.**
 
  Note: The first stage results reported in the paper appendix may differ slightly as explained in the table footnote.  
 
@@ -216,7 +250,7 @@ $$
 **Answer:**
 
 
-## **Question: Use your instrument to estimate the LATE (Local Average Treatment Effect), the impact of migration on total consumption for those induced to migrate by the treatment, as in columns 6 and 7 of table 3 in the paper. Interpret your results. **
+## **Question 15: Use your instrument to estimate the LATE (Local Average Treatment Effect), the impact of migration on total consumption for those induced to migrate by the treatment, as in columns 6 and 7 of table 3 in the paper. Interpret your results. **
 
 Note: if you wish to replicate the paper's coefficients exactly, you will need to use multiple instruments, one for each treatment arm.
 
@@ -227,22 +261,22 @@ Note: if you wish to replicate the paper's coefficients exactly, you will need t
 
 
 
-## **Question: Why are these results different from those in columns 4 and 5 of the paper?  **
+## **Question 16: Why are these results different from those in columns 4 and 5 of the paper?  **
 
 **Answer:** 
 
 
-## **Question: Why is this value particularly relevant for policy decisions in the context of this experiment.**
+## **Question 17: Why is this value particularly relevant for policy decisions in the context of this experiment.**
 
 **Answer:**
 
 
-## **Question: Suppose a policy maker found these results so compelling that they decided to make this a national policy. How would general equilibrium effects potentially change the impacts of this policy if it was implemented in a very large scale way?**
+## **Question 18: Suppose a policy maker found these results so compelling that they decided to make this a national policy. How would general equilibrium effects potentially change the impacts of this policy if it was implemented in a very large scale way?**
 
 **Answer:**
 
 
-## **Question: One major concern that is often brought up in discussions about RCT's is the problem of external validity. It is not always clear how informative the findings from a small scale research project in one context are for policy makers working on a different scale and in different contexts. What are your thoughts on the external validity of this particular project and RCT's in general? **
+## **Question 19: One major concern that is often brought up in discussions about RCT's is the problem of external validity. It is not always clear how informative the findings from a small scale research project in one context are for policy makers working on a different scale and in different contexts. What are your thoughts on the external validity of this particular project and RCT's in general? **
 
 **Answer:**
 
