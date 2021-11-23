@@ -9,29 +9,14 @@ output:
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
 ```
-**Name:**
-
-Instructions: 
-
-- This assignment is an individual assignment. You may discuss your responses in small groups or reach out to a classmate if you are having difficulties with coding but your code and answers must reflect your individual efforts and be written using your own words. Identical assignments will be given a zero grade. 
-
-- You must post your code in a private repo on GitHub and invite the TA and I as collaborators. 
-
-- You must update your work on GitHub frequently through commits where we can observe which lines you most recently worked on when we click on the repo history. This is done very easily if you are using Git correctly which is part of what we are assessing with this assignment. Make sure you make at least five commits that highlight your most recent changes. 
-
-
-
+**Name: Kiersten Kochanowski**
 
 # Empirical Analysis using Data from Bryan, G., Chowdury, S., Mobarak, A. M. (2014, Econometrica)
-
-
 This exercise uses data from Bryan,Chowdhury, and Mobarak's paper, "Underinvestment in a Profitable Technology: the Case of Seasonal Migration in Bangladesh," published in *Econometrica* in 2014. This paper studies the effects of seasonal migration on household consumption during the lean season in rural Bangladesh by randomly subsidizing the cost of seasonal migration. 
-
 
 # Set Up: 
 
 ## Finding the data
-
 The data can be found by going to Mushfiq Mobarak's Yale faculty page, select "data", and then following the link to the data repository page on the Harvard dataverse. You will need to sign in to get access to the data files. Once logged in, you will find many possible files to download. Navigate to the second page of listed files and download `Mobarak - Monga Dataverse files.zip` which contains all the files we need. 
 
 ```{r}
@@ -45,7 +30,6 @@ Round2 <- as.data.frame(Round2)
 View(Round2)
 ```
 
-
 ## Question 1: Loading the data - Load any packages you will need and the data contained in the following files `Round1_Controls_Table1.dta` and `Round2.dta`. How many observations are contained in each of these datasets. What is the level of an observation? Explain any discrepancies between the datasets.**
 
 Packages
@@ -56,17 +40,16 @@ library(stargazer)
 library(lfe)
 ```
 
-
 **Code:**
 ```{r}
-summary(Round1_Ctrl)
 nrow(Round1_Ctrl)
-summary(Round2)
 nrow(Round2)
 ```
 
 **Answer:**
-There are 1900 observations in the Control Table 1 data frame and 1907 observations in the Round 2 data frame.
+There are 1900 observations in the Control Table 1 data frame and 1907 observations in the Round 2 data frame. When the NGO did the round 1 interviews it was in October of 2008 and at the time some of the household individuals were in the city and therefore omitted in the round 1 data, and those missing individuals were recovered in the round 2 data.
+
+The level of the observations is the household (HHID).
  
 ## Question 2: Data Description- The dataset contains many variables, some of which are not used in this exercise. Keep the following variables in the final datasets (Hint: use the `select` function in `dplyr`).** 
 
@@ -126,20 +109,21 @@ View(Round2_f)
 
 # Analysis:
 
-## **Question 3: Regress all the baseline household characteristics still included in the round 1 data  on the following three variables: $cash_i$, $credit_i$ and $info_i$, and present your results in a table. What is the equivalent table in the paper?** 
+## **Question 3: Regress all the baseline household characteristics still included in the round 1 data on the following three variables: $cash_i$, $credit_i$ and $info_i$, and present your results in a table. What is the equivalent table in the paper?** 
 
 **Code:**
 ```{r, Q3, results ='asis'}
-r1 <- felm(data=Round1_f, cash ~ hhmembers_r1 + hhh_education + num_adltmalesr1)
-r2 <- felm(data=Round1_f, credit ~ hhmembers_r1 + hhh_education + num_adltmalesr1)
-r3 <- felm(data=Round1_f, info ~ hhmembers_r1 + hhh_education + num_adltmalesr1)
+ra <- felm(data=Round1_f, cash ~ hhmembers_r1 + hhh_education + num_adltmalesr1 + q9pdcalq9 + exp_total_pc_r1 + tsaving_hh_r1)
+rb <- felm(data=Round1_f, credit ~ hhmembers_r1 + hhh_education + num_adltmalesr1 + q9pdcalq9 + exp_total_pc_r1 + tsaving_hh_r1)
+rc <- felm(data=Round1_f, info ~ hhmembers_r1 + hhh_education + num_adltmalesr1 + q9pdcalq9 + exp_total_pc_r1 + tsaving_hh_r1)
+rd <- felm(data=Round1_f, control ~ hhmembers_r1 + hhh_education + num_adltmalesr1 + q9pdcalq9 + exp_total_pc_r1 + tsaving_hh_r1)
 
-stargazer(r1, r2, r3, type="text", header=FALSE, title="Randomization Balance on Observables at Baseline", 
+stargazer(ra, rb, rc, rd, type="text", header=FALSE, title="Randomization Balance on Observables at Baseline", 
                      style="qje", 
-                     se = list(r1$rse, r2$rse, r3$rse),
-                     column.labels = c("Cash Group", "Credit Group", "Info Group"),
+                     se = list(ra$rse, rb$rse, rc$rse, rd$rse),
+                     column.labels = c("Cash Group", "Credit Group", "Info Group", "Control Group"),
                      omit = "Constant",
-                     covariate.labels = c("Household Size", "Head of House Educ.", "Number of Adult Males"))
+                     covariate.labels = c("Household Size", "Head of House Educ.", "Number of Adult Males", "Total Cal/Person/Day", "Monthly Exp/Person", "Household Savings"))
 ```
 
 **Answer:** 
@@ -159,8 +143,7 @@ r5 <- felm(data=Round2_f, credit ~ migrant)
 r6 <- felm(data=Round2_f, info ~ migrant)
 r7 <- felm(data=Round2_f, control ~ migrant)
 
-
-stargazer(r4, r5, r6, r7, type="text", header=FALSE, title="Program Participation Rates", 
+stargazer(r4, r5, r6, r7, type="text", header=FALSE, title="Program Participation (Migration) Rates", 
                      style="qje", 
                      se = list(r4$rse, r5$rse, r6$rse, r7$rse),
                      covariate.labels = c("Migrant"),
@@ -176,7 +159,7 @@ This mirrors Table 2 in the paper titled "Program Up-Take Rates"
 ## **Question 6: How should the coefficients in the table above be interpreted? Why is this table important?**
 
 **Answer:**
-This table is important in order to determine whether incentives had an impact on households' decisions to migrate during the manga.
+This table is important in order to determine whether incentives had an impact on households' decisions to migrate during the monga, or whether they're in line with the control group's migration rate.
 
 ## **Question 7: What is the underlying migration rate in the control group and how might this change our interpretation of the results? **
 
@@ -186,25 +169,13 @@ Although my table's results aren't accurate, the migration rate in the control g
 
 ## **Question 8: Replicate the results presented in the third row of the first three columns of table 3. Present them in a table and interpret these results.**
 
-Note 1: The authors elect to drop one household observation because the reported value of total fish consumed in the household is very high. 
-
-Note 2: To replicate the standard errors in the paper you will need to cluster your standard errors at the village level. We will discuss clustering later in the semester.  Using `felm` you can specify the level of clustering (`clustervariable`) using the following command:
-
-`reg<-felm(Y~x1|fevariables|(ivfirststage)|clustervariable, dataname)` 
-
-where you can replace fevariables and ivfirststage with 0 if you are not using fixed effects or an instrument. 
-
-Upizila fixed effect
-
-Total consumption ~ cash, credit, info
-
 **Code:**
-
 ```{r}
 #Cluster package
 install.packages("cluster")
 library(cluster)
 ```
+
 
 ```{r}
 #Drop outlier
@@ -235,12 +206,12 @@ stargazer(r8, type="text", header=FALSE, title="Effects of Migration on Consumpt
 
 
 **Answer:**
+This table shows that incentive treatments (cash and credit), which induced more migration during monga, resulted in significant increases in household consumption among remaining members in the villages. Households in the cash treatment group spent 96.57 more taka/capita on average (at the 99% confidence level), households in the credit treatment group spent 76.74 more taka/capita on average (at the 95% confidence level). The caveat with these results is that we'd expect consumption per capita to increase given there's one less person in the household during monga (the migrant).
 
 
 ## **Question 9: What happens to these estimates if you drop the fixed effects from the specification. Why? **
 
 **Code:**
-
 ```{r}
 r9<-felm(average_exp2~cash+credit+info|0|0|village, data=Round2_f_sub)
 summary(r9)
@@ -249,17 +220,18 @@ cluster_se9 <- as.vector(summary(r9,cluster = c("village"))$coefficients[,"Clust
 ```
 
 ```{r, Q9, results ='asis'}
-stargazer(r8, r9, type="text", header=FALSE, title="Effects of Migration on Consumption Among Remaining Household Members", 
+stargazer(r8, r9, type="text", header=FALSE, title="Effects of Migration on Consumption Among Remaining Household Members in 2008", 
                      style="qje", 
                      se = list(r8$cluster_se8, r9$cluster_se9),
                      covariate.labels = c("Cash", "Credit", "Info"),
                      dep.var.labels.include = FALSE,
                      omit = "Constant",
+                     add.lines = list(c("Sub-District FE", "Yes", "No")),
                      column.labels = c("Total consumption"))
 ```
 
 **Answer:**
-
+When missing the sub-district control, our treatment coefficients are downwardly biased.
 
 
 ## **Question 10: Replicate the results presented in the third row of the fourth and fifth columns of table 3. What happens to the coefficient and standard errors? Is this surprising? What does this tell us?**
@@ -278,7 +250,7 @@ r10 <- felm(average_exp2~ITT|upazila|0|village, data=Round2_f_sub)
 cluster_se10 <- as.vector(summary(r10,cluster = c("village"))$coefficients[,"Cluster s.e."])
 
 #Model with ITT and following controls: household education, proxy for income, pctg of total expenditure on food, number of adult males, number of children, lacked access to credit, borrowing, total household expenditures/capita at baseline, expectations of support
-r11 <- felm(average_exp2 ~ ITT + walls_good + subsistencer1 + num_adltmalesr1 + num_childrenr1 + bankedr1 + exp_total_pc_r1 + monga + dhaka_network + constrainedr1 + bankedr1|upazila|0|village, data=Round2_f_sub)
+r11 <- felm(average_exp2 ~ ITT + lit + walls_good + subsistencer1 + num_adltmalesr1 + num_childrenr1 + bankedr1 + exp_total_pc_r1 + monga + dhaka_network + constrainedr1 + bankedr1|upazila|0|village, data=Round2_f_sub)
 cluster_se11 <- as.vector(summary(r11,cluster = c("village"))$coefficients[,"Cluster s.e."])
 ```
 
@@ -290,14 +262,13 @@ stargazer(r10, r11, type="text", header=FALSE, title="Effects of Migration on Co
                      se = list(r10$cluster_se10, r11$cluster_se11),
                      covariate.labels = c("Intent to Treat"),
                      dep.var.labels.include = FALSE,
-                     omit = c("Constant", "walls_good", "subsistencer1", "num_adltmalesr1", "num_childrenr1", "bankedr1", "exp_total_pc_r1", "monga", "dhaka_network", "constrainedr1"),
+                     omit = c("Constant", "lit", "walls_good", "subsistencer1", "num_adltmalesr1", "num_childrenr1", "bankedr1", "exp_total_pc_r1", "monga", "dhaka_network", "constrainedr1"),
                      column.labels = c("Total consumption", "Total consumption"),
                      add.lines = list(c("Additional controls", "No", "Yes")))
 ```
 
-
 **Answer:**
-Given that the significance and magnitude of the ITT coefficient doesn't change much when controlling for baseline characteristics, the results/relationship is robust between ITT and total consumption.
+Given that the significance and magnitude of the ITT coefficient doesn't change much when controlling for baseline characteristics, the results/relationship are robust between ITT and total consumption.
 
 ## **Question 11: Why is the header of the first five columns of table 3 "ITT". What is meant by this and what does this tell us about how we should interpret these results?**
 
@@ -324,7 +295,7 @@ $$
 Migrant_{ivj}=\alpha+\beta_1ITT_{ivj}+\nu_{ivj}+\epsilon_{ivj}
 $$
 
-Where migrant is a binary variable, beta is the indicator for whether or not household was assigned to treatment (incentive) and v represents baseline controls
+Where migrant is a binary variable, beta is the indicator for whether or not household was assigned to treatment (incentive) and v represents baseline controls.
 
 ## **Question 14: Estimate the first stage and check that you have a strong instrument for migration.**
 
@@ -349,7 +320,7 @@ stargazer(r12, r13, r14, type="text", header=FALSE, title="Relationship between 
 ```
 
 **Answer:**
-The first stages are strong for each of the IVs (ITT, cash, and credit all against their relationship to migration) given the statistical significance. The magnitude of the coefficients is also helpful when we rely on the exogenous variation's impact on independent var migration (and ultimately its impact on total consumption).
+The first stages are strong for each of the IVs (ITT, cash, and credit all against their relationship to migration) given the statistical significance. The magnitude of the coefficients is also helpful when we rely on the exogenous variation's impact on independent variable migration (and ultimately its impact on total consumption).
 
 
 ## **Question 15: Use your instrument to estimate the LATE (Local Average Treatment Effect), the impact of migration on total consumption for those induced to migrate by the treatment, as in columns 6 and 7 of table 3 in the paper. Interpret your results. **
@@ -369,18 +340,19 @@ stargazer(r15, r16, type="text", header=FALSE, title="Local Average Treatment Ef
                      se = list(r15$rse, r16$rse),
                      dep.var.labels.include = TRUE,
                      omit = c("upazila", "Constant", "walls_good", "subsistencer1", "num_adltmalesr1", "num_childrenr1", "bankedr1", "exp_total_pc_r1", "monga", "dhaka_network", "constrainedr1", "bankedr1"),
+                     covariate.labels = c("IV"),
+                     add.lines = list(c("Controls", "No", "Yes")),
                      column.labels = c("Total Consumption", "Total Consumption"))
 ```
 
-
 **Answer:**
-
+These regressions show the effect of migration (only for those households that were induced to migrate by the RCT's intervention) on consumption. The coefficient for the model without any controls shows that there was a 374.86 increase in taka spent/capita for households that had an individual migrate (on average). When controlling for household socio-economic characteristics, this effect is still significant and robust: there was a 308.998 increase in taka spent/capita for households that had an individual migrate (on average).
 
 
 ## **Question 16: Why are these results different from those in columns 4 and 5 of the paper?**
 
 **Answer:** 
-The LATE results are different from the previous regressions (ITT) because they estimate the effect of treatment(migration) and not just he effect of being in the treatment group (which is susceptible to non-compliers). 
+The LATE results are different from the previous regressions (ITT) because they estimate the effect of treatment (migration) and not just the effect of being in the treatment group (which is susceptible to non-compliers). 
 
 ## **Question 17: Why is this value particularly relevant for policy decisions in the context of this experiment.**
 
