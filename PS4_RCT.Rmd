@@ -16,6 +16,15 @@ This exercise uses data from Bryan,Chowdhury, and Mobarak's paper, "Underinvestm
 
 # Set Up: 
 
+```{r}
+#Packages
+library(haven)
+library(dplyr)
+library(stargazer)
+library(lfe)
+```
+
+
 ## Finding the data
 The data can be found by going to Mushfiq Mobarak's Yale faculty page, select "data", and then following the link to the data repository page on the Harvard dataverse. You will need to sign in to get access to the data files. Once logged in, you will find many possible files to download. Navigate to the second page of listed files and download `Mobarak - Monga Dataverse files.zip` which contains all the files we need. 
 
@@ -31,14 +40,6 @@ View(Round2)
 ```
 
 ## Question 1: Loading the data - Load any packages you will need and the data contained in the following files `Round1_Controls_Table1.dta` and `Round2.dta`. How many observations are contained in each of these datasets. What is the level of an observation? Explain any discrepancies between the datasets.**
-
-Packages
-```{r}
-library(haven)
-library(dplyr)
-library(stargazer)
-library(lfe)
-```
 
 **Code:**
 ```{r}
@@ -118,7 +119,7 @@ rb <- felm(data=Round1_f, credit ~ hhmembers_r1 + hhh_education + num_adltmalesr
 rc <- felm(data=Round1_f, info ~ hhmembers_r1 + hhh_education + num_adltmalesr1 + q9pdcalq9 + exp_total_pc_r1 + tsaving_hh_r1)
 rd <- felm(data=Round1_f, control ~ hhmembers_r1 + hhh_education + num_adltmalesr1 + q9pdcalq9 + exp_total_pc_r1 + tsaving_hh_r1)
 
-stargazer(ra, rb, rc, rd, type="text", header=FALSE, title="Randomization Balance on Observables at Baseline", 
+stargazer(ra, rb, rc, rd, type="html", header=FALSE, title="Randomization Balance on Observables at Baseline", 
                      style="qje", 
                      se = list(ra$rse, rb$rse, rc$rse, rd$rse),
                      column.labels = c("Cash Group", "Credit Group", "Info Group", "Control Group"),
@@ -143,7 +144,7 @@ r5 <- felm(data=Round2_f, credit ~ migrant)
 r6 <- felm(data=Round2_f, info ~ migrant)
 r7 <- felm(data=Round2_f, control ~ migrant)
 
-stargazer(r4, r5, r6, r7, type="text", header=FALSE, title="Program Participation (Migration) Rates", 
+stargazer(r4, r5, r6, r7, type="html", header=FALSE, title="Program Participation (Migration) Rates", 
                      style="qje", 
                      se = list(r4$rse, r5$rse, r6$rse, r7$rse),
                      covariate.labels = c("Migrant"),
@@ -172,7 +173,6 @@ Although my table's results aren't accurate, the migration rate in the control g
 **Code:**
 ```{r}
 #Cluster package
-install.packages("cluster")
 library(cluster)
 ```
 
@@ -195,7 +195,7 @@ summary(r8)
 #Save cluster robust standard errors
 cluster_se8 <- as.vector(summary(r8,cluster = c("village"))$coefficients[,"Cluster s.e."])
 
-stargazer(r8, type="text", header=FALSE, title="Effects of Migration on Consumption Among Remaining Household Members", 
+stargazer(r8, type="html", header=FALSE, title="Effects of Migration on Consumption Among Remaining Household Members", 
                      style="qje", 
                      se = list(r8$cluster_se8),
                      covariate.labels = c("Cash", "Credit", "Info"),
@@ -220,7 +220,7 @@ cluster_se9 <- as.vector(summary(r9,cluster = c("village"))$coefficients[,"Clust
 ```
 
 ```{r, Q9, results ='asis'}
-stargazer(r8, r9, type="text", header=FALSE, title="Effects of Migration on Consumption Among Remaining Household Members in 2008", 
+stargazer(r8, r9, type="html", header=FALSE, title="Effects of Migration on Consumption Among Remaining Household Members in 2008", 
                      style="qje", 
                      se = list(r8$cluster_se8, r9$cluster_se9),
                      covariate.labels = c("Cash", "Credit", "Info"),
@@ -257,7 +257,7 @@ cluster_se11 <- as.vector(summary(r11,cluster = c("village"))$coefficients[,"Clu
 
 Display results
 ```{r, Q10, results='asis'}
-stargazer(r10, r11, type="text", header=FALSE, title="Effects of Migration on Consumption Among Remaining Household Members", 
+stargazer(r10, r11, type="html", header=FALSE, title="Effects of Migration on Consumption Among Remaining Household Members", 
                      style="qje", 
                      se = list(r10$cluster_se10, r11$cluster_se11),
                      covariate.labels = c("Intent to Treat"),
@@ -310,7 +310,7 @@ r13 <- felm(data=Round2_f_sub, migrant ~ cash)
 r14 <- felm(data=Round2_f_sub, migrant ~ credit)
 
 #Displaying results
-stargazer(r12, r13, r14, type="text", header=FALSE, title="Relationship between Treatment Assignment & Migration", 
+stargazer(r12, r13, r14, type="html", header=FALSE, title="Relationship between Treatment Assignment & Migration", 
                      style="qje", 
                      se = list(r12$rse, r13$rse, r14$rse),
                      covariate.labels = c("Intent to treat", "Cash", "Credit", "Info"),
@@ -328,14 +328,14 @@ The first stages are strong for each of the IVs (ITT, cash, and credit all again
 Note: if you wish to replicate the paper's coefficients exactly, you will need to use multiple instruments, one for each treatment arm.
 
 **Code:**
-```{r}
+```{r, Q15a}
 r15 <- felm(data=Round2_f_sub, average_exp2 ~ 1 |upazila|(migrant~ITT)|village) 
 r16 <- felm(data=Round2_f_sub, average_exp2 ~ walls_good + subsistencer1 + num_adltmalesr1 + num_childrenr1 + bankedr1 + exp_total_pc_r1 + monga + dhaka_network + constrainedr1 + bankedr1|upazila|(migrant~ITT + walls_good + subsistencer1 + num_adltmalesr1 + num_childrenr1 + bankedr1 + exp_total_pc_r1 + monga + dhaka_network + constrainedr1 + bankedr1)|village)
 
 ```
 
-```{r, Q14, results='asis'}
-stargazer(r15, r16, type="text", header=FALSE, title="Local Average Treatment Effect of Migration on Total Consumption", 
+```{r, Q15b, results='asis'}
+stargazer(r15, r16, type="html", header=FALSE, title="Local Average Treatment Effect of Migration on Total Consumption", 
                      style="qje", 
                      se = list(r15$rse, r16$rse),
                      dep.var.labels.include = TRUE,

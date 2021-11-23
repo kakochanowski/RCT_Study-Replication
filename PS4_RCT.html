@@ -170,30 +170,60 @@ pre code {
 </div>
 
 
-<p><strong>Name:</strong></p>
-<p>Instructions:</p>
-<ul>
-<li><p>This assignment is an individual assignment. You may discuss your responses in small groups or reach out to a classmate if you are having difficulties with coding but your code and answers must reflect your individual efforts and be written using your own words. Identical assignments will be given a zero grade.</p></li>
-<li><p>You must post your code in a private repo on GitHub and invite the TA and I as collaborators.</p></li>
-<li><p>You must update your work on GitHub frequently through commits where we can observe which lines you most recently worked on when we click on the repo history. This is done very easily if you are using Git correctly which is part of what we are assessing with this assignment. Make sure you make at least five commits that highlight your most recent changes.</p></li>
-</ul>
+<p><strong>Name: Kiersten Kochanowski</strong></p>
 <div id="empirical-analysis-using-data-from-bryan-g.-chowdury-s.-mobarak-a.-m.-2014-econometrica" class="section level1" number="1">
 <h1 number="1"><span class="header-section-number">1</span> Empirical Analysis using Data from Bryan, G., Chowdury, S., Mobarak, A. M. (2014, Econometrica)</h1>
 <p>This exercise uses data from Bryan,Chowdhury, and Mobarak’s paper, “Underinvestment in a Profitable Technology: the Case of Seasonal Migration in Bangladesh,” published in <em>Econometrica</em> in 2014. This paper studies the effects of seasonal migration on household consumption during the lean season in rural Bangladesh by randomly subsidizing the cost of seasonal migration.</p>
 </div>
 <div id="set-up" class="section level1" number="2">
 <h1 number="2"><span class="header-section-number">2</span> Set Up:</h1>
+<pre class="r"><code>#Packages
+library(haven)</code></pre>
+<pre><code>## Warning: package &#39;haven&#39; was built under R version 4.1.1</code></pre>
+<pre class="r"><code>library(dplyr)</code></pre>
+<pre><code>## Warning: package &#39;dplyr&#39; was built under R version 4.1.1</code></pre>
+<pre><code>## 
+## Attaching package: &#39;dplyr&#39;</code></pre>
+<pre><code>## The following objects are masked from &#39;package:stats&#39;:
+## 
+##     filter, lag</code></pre>
+<pre><code>## The following objects are masked from &#39;package:base&#39;:
+## 
+##     intersect, setdiff, setequal, union</code></pre>
+<pre class="r"><code>library(stargazer)</code></pre>
+<pre><code>## Warning: package &#39;stargazer&#39; was built under R version 4.1.1</code></pre>
+<pre><code>## 
+## Please cite as:</code></pre>
+<pre><code>##  Hlavac, Marek (2018). stargazer: Well-Formatted Regression and Summary Statistics Tables.</code></pre>
+<pre><code>##  R package version 5.2.2. https://CRAN.R-project.org/package=stargazer</code></pre>
+<pre class="r"><code>library(lfe)</code></pre>
+<pre><code>## Warning: package &#39;lfe&#39; was built under R version 4.1.1</code></pre>
+<pre><code>## Loading required package: Matrix</code></pre>
 <div id="finding-the-data" class="section level2" number="2.1">
 <h2 number="2.1"><span class="header-section-number">2.1</span> Finding the data</h2>
 <p>The data can be found by going to Mushfiq Mobarak’s Yale faculty page, select “data”, and then following the link to the data repository page on the Harvard dataverse. You will need to sign in to get access to the data files. Once logged in, you will find many possible files to download. Navigate to the second page of listed files and download <code>Mobarak - Monga Dataverse files.zip</code> which contains all the files we need.</p>
+<pre class="r"><code>#Kiersten&#39;s WD
+getwd()</code></pre>
+<pre><code>## [1] &quot;C:/Users/Kiersten/Documents/School/S2_Causal_Inf/PS4_Kochanowski&quot;</code></pre>
+<pre class="r"><code>Round1_Ctrl &lt;- read_dta(&quot;/Users/Kiersten/Documents/School/S2_Causal_Inf/PS4_Kochanowski/Data/Round1_Controls_Table1.dta&quot;)
+Round2 &lt;- read_dta(&quot;/Users/Kiersten/Documents/School/S2_Causal_Inf/PS4_Kochanowski/Data/Round2.dta&quot;)
+Round1_Ctrl &lt;- as.data.frame(Round1_Ctrl)
+View(Round1_Ctrl)
+Round2 &lt;- as.data.frame(Round2)
+View(Round2)</code></pre>
 </div>
-<div id="question-loading-the-data---load-any-packages-you-will-need-and-the-data-contained-in-the-following-files-round1_controls_table1.dta-and-round2.dta.-how-many-observations-are-contained-in-each-of-these-datasets.-what-is-the-level-of-an-observation-explain-any-discrepancies-between-the-datasets." class="section level2" number="2.2">
-<h2 number="2.2"><span class="header-section-number">2.2</span> Question: Loading the data - Load any packages you will need and the data contained in the following files <code>Round1_Controls_Table1.dta</code> and <code>Round2.dta</code>. How many observations are contained in each of these datasets. What is the level of an observation? Explain any discrepancies between the datasets.**</h2>
+<div id="question-1-loading-the-data---load-any-packages-you-will-need-and-the-data-contained-in-the-following-files-round1_controls_table1.dta-and-round2.dta.-how-many-observations-are-contained-in-each-of-these-datasets.-what-is-the-level-of-an-observation-explain-any-discrepancies-between-the-datasets." class="section level2" number="2.2">
+<h2 number="2.2"><span class="header-section-number">2.2</span> Question 1: Loading the data - Load any packages you will need and the data contained in the following files <code>Round1_Controls_Table1.dta</code> and <code>Round2.dta</code>. How many observations are contained in each of these datasets. What is the level of an observation? Explain any discrepancies between the datasets.**</h2>
 <p><strong>Code:</strong></p>
-<p><strong>Answer:</strong></p>
+<pre class="r"><code>nrow(Round1_Ctrl)</code></pre>
+<pre><code>## [1] 1900</code></pre>
+<pre class="r"><code>nrow(Round2)</code></pre>
+<pre><code>## [1] 1907</code></pre>
+<p><strong>Answer:</strong> There are 1900 observations in the Control Table 1 data frame and 1907 observations in the Round 2 data frame. When the NGO did the round 1 interviews it was in October of 2008 and at the time some of the household individuals were in the city and therefore omitted in the round 1 data, and those missing individuals were recovered in the round 2 data.</p>
+<p>The level of the observations is the household (HHID).</p>
 </div>
-<div id="question-data-description--the-dataset-contains-many-variables-some-of-which-are-not-used-in-this-exercise.-keep-the-following-variables-in-the-final-datasets-hint-use-the-select-function-in-dplyr." class="section level2" number="2.3">
-<h2 number="2.3"><span class="header-section-number">2.3</span> Question: Data Description- The dataset contains many variables, some of which are not used in this exercise. Keep the following variables in the final datasets (Hint: use the <code>select</code> function in <code>dplyr</code>).**</h2>
+<div id="question-2-data-description--the-dataset-contains-many-variables-some-of-which-are-not-used-in-this-exercise.-keep-the-following-variables-in-the-final-datasets-hint-use-the-select-function-in-dplyr." class="section level2" number="2.3">
+<h2 number="2.3"><span class="header-section-number">2.3</span> Question 2: Data Description- The dataset contains many variables, some of which are not used in this exercise. Keep the following variables in the final datasets (Hint: use the <code>select</code> function in <code>dplyr</code>).**</h2>
 <p>For Round 1 data:</p>
 <table>
 <thead>
@@ -245,6 +275,9 @@ pre code {
 </tr>
 </tbody>
 </table>
+<p>Code</p>
+<pre class="r"><code>Round1_f &lt;- select(Round1_Ctrl, cash, credit, info, control, q9pdcalq9, exp_total_pc_r1, hhmembers_r1, tsaving_hh_r1, hhh_education, num_adltmalesr1)
+View(Round1_f)</code></pre>
 <p>For Round 2 data:</p>
 <table>
 <colgroup>
@@ -348,96 +381,1716 @@ pre code {
 </tr>
 </tbody>
 </table>
-<p><strong>A description of each variable should appear in the column headers of the loaded data. </strong></p>
-<p><strong>Code:</strong></p>
+<pre class="r"><code>Round2_f &lt;- select(Round2, cash, credit, info, control,average_exp2, lit, walls_good, monga, dhaka_remit, dhaka_network, exp_total_pc_r1, subsistencer1, num_adltmalesr1, num_childrenr1, avgQ13earned, constrainedr1, bankedr1, upazila, village, migrant, total_fish, migrant_new)
+View(Round2_f)</code></pre>
 </div>
 </div>
 <div id="analysis" class="section level1" number="3">
 <h1 number="3"><span class="header-section-number">3</span> Analysis:</h1>
-<div id="question-regress-all-the-baseline-household-characteristics-still-included-in-the-round-1-data-on-the-following-three-variables-cash_i-credit_i-and-info_i-and-present-your-results-in-a-table.-what-is-the-equivalent-table-in-the-paper" class="section level2" number="3.1">
-<h2 number="3.1"><span class="header-section-number">3.1</span> <strong>Question: Regress all the baseline household characteristics still included in the round 1 data on the following three variables: <span class="math inline">\(cash_i\)</span>, <span class="math inline">\(credit_i\)</span> and <span class="math inline">\(info_i\)</span>, and present your results in a table. What is the equivalent table in the paper?</strong></h2>
+<div id="question-3-regress-all-the-baseline-household-characteristics-still-included-in-the-round-1-data-on-the-following-three-variables-cash_i-credit_i-and-info_i-and-present-your-results-in-a-table.-what-is-the-equivalent-table-in-the-paper" class="section level2" number="3.1">
+<h2 number="3.1"><span class="header-section-number">3.1</span> <strong>Question 3: Regress all the baseline household characteristics still included in the round 1 data on the following three variables: <span class="math inline">\(cash_i\)</span>, <span class="math inline">\(credit_i\)</span> and <span class="math inline">\(info_i\)</span>, and present your results in a table. What is the equivalent table in the paper?</strong></h2>
 <p><strong>Code:</strong></p>
-<p><strong>Answer:</strong></p>
+<pre class="r"><code>ra &lt;- felm(data=Round1_f, cash ~ hhmembers_r1 + hhh_education + num_adltmalesr1 + q9pdcalq9 + exp_total_pc_r1 + tsaving_hh_r1)
+rb &lt;- felm(data=Round1_f, credit ~ hhmembers_r1 + hhh_education + num_adltmalesr1 + q9pdcalq9 + exp_total_pc_r1 + tsaving_hh_r1)
+rc &lt;- felm(data=Round1_f, info ~ hhmembers_r1 + hhh_education + num_adltmalesr1 + q9pdcalq9 + exp_total_pc_r1 + tsaving_hh_r1)
+rd &lt;- felm(data=Round1_f, control ~ hhmembers_r1 + hhh_education + num_adltmalesr1 + q9pdcalq9 + exp_total_pc_r1 + tsaving_hh_r1)
+
+stargazer(ra, rb, rc, rd, type=&quot;html&quot;, header=FALSE, title=&quot;Randomization Balance on Observables at Baseline&quot;, 
+                     style=&quot;qje&quot;, 
+                     se = list(ra$rse, rb$rse, rc$rse, rd$rse),
+                     column.labels = c(&quot;Cash Group&quot;, &quot;Credit Group&quot;, &quot;Info Group&quot;, &quot;Control Group&quot;),
+                     omit = &quot;Constant&quot;,
+                     covariate.labels = c(&quot;Household Size&quot;, &quot;Head of House Educ.&quot;, &quot;Number of Adult Males&quot;, &quot;Total Cal/Person/Day&quot;, &quot;Monthly Exp/Person&quot;, &quot;Household Savings&quot;))</code></pre>
+<table style="text-align:center">
+<caption>
+<strong>Randomization Balance on Observables at Baseline</strong>
+</caption>
+<tr>
+<td colspan="5" style="border-bottom: 1px solid black">
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+</td>
+<td>
+cash
+</td>
+<td>
+credit
+</td>
+<td>
+info
+</td>
+<td>
+control
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+</td>
+<td>
+Cash Group
+</td>
+<td>
+Credit Group
+</td>
+<td>
+Info Group
+</td>
+<td>
+Control Group
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+</td>
+<td>
+(1)
+</td>
+<td>
+(2)
+</td>
+<td>
+(3)
+</td>
+<td>
+(4)
+</td>
+</tr>
+<tr>
+<td colspan="5" style="border-bottom: 1px solid black">
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+Household Size
+</td>
+<td>
+-0.019
+</td>
+<td>
+-0.009
+</td>
+<td>
+0.011
+</td>
+<td>
+0.018<sup>*</sup>
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+</td>
+<td>
+(0.015)
+</td>
+<td>
+(0.013)
+</td>
+<td>
+(0.012)
+</td>
+<td>
+(0.011)
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+</td>
+<td>
+</td>
+<td>
+</td>
+<td>
+</td>
+<td>
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+Head of House Educ.
+</td>
+<td>
+0.010
+</td>
+<td>
+0.014
+</td>
+<td>
+-0.046<sup>*</sup>
+</td>
+<td>
+0.022
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+</td>
+<td>
+(0.035)
+</td>
+<td>
+(0.033)
+</td>
+<td>
+(0.026)
+</td>
+<td>
+(0.028)
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+</td>
+<td>
+</td>
+<td>
+</td>
+<td>
+</td>
+<td>
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+Number of Adult Males
+</td>
+<td>
+-0.017
+</td>
+<td>
+0.045
+</td>
+<td>
+-0.00004
+</td>
+<td>
+-0.028
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+</td>
+<td>
+(0.030)
+</td>
+<td>
+(0.029)
+</td>
+<td>
+(0.023)
+</td>
+<td>
+(0.023)
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+</td>
+<td>
+</td>
+<td>
+</td>
+<td>
+</td>
+<td>
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+Total Cal/Person/Day
+</td>
+<td>
+-0.00000
+</td>
+<td>
+0.00000
+</td>
+<td>
+-0.00005<sup>*</sup>
+</td>
+<td>
+0.00005<sup>*</sup>
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+</td>
+<td>
+(0.00003)
+</td>
+<td>
+(0.00003)
+</td>
+<td>
+(0.00003)
+</td>
+<td>
+(0.00003)
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+</td>
+<td>
+</td>
+<td>
+</td>
+<td>
+</td>
+<td>
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+Monthly Exp/Person
+</td>
+<td>
+0.00000
+</td>
+<td>
+-0.00001
+</td>
+<td>
+-0.00001
+</td>
+<td>
+0.00002
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+</td>
+<td>
+(0.00003)
+</td>
+<td>
+(0.00003)
+</td>
+<td>
+(0.00001)
+</td>
+<td>
+(0.00002)
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+</td>
+<td>
+</td>
+<td>
+</td>
+<td>
+</td>
+<td>
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+Household Savings
+</td>
+<td>
+-0.00000
+</td>
+<td>
+-0.00000
+</td>
+<td>
+0.00001
+</td>
+<td>
+-0.00000
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+</td>
+<td>
+(0.00001)
+</td>
+<td>
+(0.00001)
+</td>
+<td>
+(0.00001)
+</td>
+<td>
+(0.00001)
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+</td>
+<td>
+</td>
+<td>
+</td>
+<td>
+</td>
+<td>
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+<em>N</em>
+</td>
+<td>
+996
+</td>
+<td>
+996
+</td>
+<td>
+996
+</td>
+<td>
+996
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+R<sup>2</sup>
+</td>
+<td>
+0.005
+</td>
+<td>
+0.003
+</td>
+<td>
+0.014
+</td>
+<td>
+0.008
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+Adjusted R<sup>2</sup>
+</td>
+<td>
+-0.001
+</td>
+<td>
+-0.003
+</td>
+<td>
+0.008
+</td>
+<td>
+0.002
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+Residual Std. Error (df = 989)
+</td>
+<td>
+0.485
+</td>
+<td>
+0.456
+</td>
+<td>
+0.372
+</td>
+<td>
+0.372
+</td>
+</tr>
+<tr>
+<td colspan="5" style="border-bottom: 1px solid black">
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+<em>Notes:</em>
+</td>
+<td colspan="4" style="text-align:right">
+<sup>***</sup>Significant at the 1 percent level.
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+</td>
+<td colspan="4" style="text-align:right">
+<sup>**</sup>Significant at the 5 percent level.
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+</td>
+<td colspan="4" style="text-align:right">
+<sup>*</sup>Significant at the 10 percent level.
+</td>
+</tr>
+</table>
+<p><strong>Answer:</strong> This is a balance table which reveals whether there are any biases in the groups (control and experimental) at baseline. It mirrors Table 1 in the paper.</p>
 </div>
-<div id="question-how-should-the-coefficients-in-the-table-above-be-interpreted-what-should-we-look-for-in-this-table" class="section level2" number="3.2">
-<h2 number="3.2"><span class="header-section-number">3.2</span> <strong>Question: How should the coefficients in the table above be interpreted? What should we look for in this table?</strong></h2>
-<p><strong>Answer:</strong></p>
+<div id="question-4-how-should-the-coefficients-in-the-table-above-be-interpreted-what-should-we-look-for-in-this-table" class="section level2" number="3.2">
+<h2 number="3.2"><span class="header-section-number">3.2</span> <strong>Question 4: How should the coefficients in the table above be interpreted? What should we look for in this table?</strong></h2>
+<p><strong>Answer:</strong> We are looking to see whether there are statistically significant relationships between the observable pre-treatment characteristics and the groups households were assigned to. If any of these were significant, it could indicate that the assignment of groups was not random (or that it is coincidence per statistical chance). In our case, none of the coefficients are significant which means assignment was random and balanced across groups.</p>
 </div>
-<div id="question-using-the-round-2-data-regress-migrant-on-the-treatment-arm-indicators.-what-is-the-equivalent-table-in-the-paper" class="section level2" number="3.3">
-<h2 number="3.3"><span class="header-section-number">3.3</span> <strong>Question: Using the round 2 data, regress migrant on the treatment arm indicators. What is the equivalent table in the paper?</strong></h2>
+<div id="question-5-using-the-round-2-data-regress-migrant-on-the-treatment-arm-indicators.-what-is-the-equivalent-table-in-the-paper" class="section level2" number="3.3">
+<h2 number="3.3"><span class="header-section-number">3.3</span> <strong>Question 5: Using the round 2 data, regress migrant on the treatment arm indicators. What is the equivalent table in the paper?</strong></h2>
 <p><strong>Code:</strong></p>
-<p><strong>Answer:</strong></p>
+<pre class="r"><code>r4 &lt;- felm(data=Round2_f, cash ~ migrant)
+r5 &lt;- felm(data=Round2_f, credit ~ migrant)
+r6 &lt;- felm(data=Round2_f, info ~ migrant)
+r7 &lt;- felm(data=Round2_f, control ~ migrant)
+
+stargazer(r4, r5, r6, r7, type=&quot;html&quot;, header=FALSE, title=&quot;Program Participation (Migration) Rates&quot;, 
+                     style=&quot;qje&quot;, 
+                     se = list(r4$rse, r5$rse, r6$rse, r7$rse),
+                     covariate.labels = c(&quot;Migrant&quot;),
+                     dep.var.labels.include = TRUE,
+                     omit = &quot;Constant&quot;,
+                     column.labels = c(&quot;Incentivized&quot;, &quot;Not Incentivized&quot;),
+                     column.separate = c(2,2))</code></pre>
+<table style="text-align:center">
+<caption>
+<strong>Program Participation (Migration) Rates</strong>
+</caption>
+<tr>
+<td colspan="5" style="border-bottom: 1px solid black">
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+</td>
+<td>
+cash
+</td>
+<td>
+credit
+</td>
+<td>
+info
+</td>
+<td>
+control
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+</td>
+<td colspan="2">
+Incentivized
+</td>
+<td colspan="2">
+Not Incentivized
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+</td>
+<td>
+(1)
+</td>
+<td>
+(2)
+</td>
+<td>
+(3)
+</td>
+<td>
+(4)
+</td>
+</tr>
+<tr>
+<td colspan="5" style="border-bottom: 1px solid black">
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+Migrant
+</td>
+<td>
+0.119<sup>***</sup>
+</td>
+<td>
+0.073<sup>***</sup>
+</td>
+<td>
+-0.095<sup>***</sup>
+</td>
+<td>
+-0.097<sup>***</sup>
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+</td>
+<td>
+(0.022)
+</td>
+<td>
+(0.021)
+</td>
+<td>
+(0.017)
+</td>
+<td>
+(0.017)
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+</td>
+<td>
+</td>
+<td>
+</td>
+<td>
+</td>
+<td>
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+<em>N</em>
+</td>
+<td>
+1,871
+</td>
+<td>
+1,871
+</td>
+<td>
+1,871
+</td>
+<td>
+1,871
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+R<sup>2</sup>
+</td>
+<td>
+0.015
+</td>
+<td>
+0.006
+</td>
+<td>
+0.017
+</td>
+<td>
+0.017
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+Adjusted R<sup>2</sup>
+</td>
+<td>
+0.015
+</td>
+<td>
+0.006
+</td>
+<td>
+0.016
+</td>
+<td>
+0.017
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+Residual Std. Error (df = 1869)
+</td>
+<td>
+0.479
+</td>
+<td>
+0.462
+</td>
+<td>
+0.362
+</td>
+<td>
+0.365
+</td>
+</tr>
+<tr>
+<td colspan="5" style="border-bottom: 1px solid black">
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+<em>Notes:</em>
+</td>
+<td colspan="4" style="text-align:right">
+<sup>***</sup>Significant at the 1 percent level.
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+</td>
+<td colspan="4" style="text-align:right">
+<sup>**</sup>Significant at the 5 percent level.
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+</td>
+<td colspan="4" style="text-align:right">
+<sup>*</sup>Significant at the 10 percent level.
+</td>
+</tr>
+</table>
+<p><strong>Answer:</strong> This mirrors Table 2 in the paper titled “Program Up-Take Rates”</p>
 </div>
-<div id="question-how-should-the-coefficients-in-the-table-above-be-interpreted-why-is-this-table-important" class="section level2" number="3.4">
-<h2 number="3.4"><span class="header-section-number">3.4</span> <strong>Question: How should the coefficients in the table above be interpreted? Why is this table important?</strong></h2>
-<p><strong>Answer:</strong></p>
+<div id="question-6-how-should-the-coefficients-in-the-table-above-be-interpreted-why-is-this-table-important" class="section level2" number="3.4">
+<h2 number="3.4"><span class="header-section-number">3.4</span> <strong>Question 6: How should the coefficients in the table above be interpreted? Why is this table important?</strong></h2>
+<p><strong>Answer:</strong> This table is important in order to determine whether incentives had an impact on households’ decisions to migrate during the monga, or whether they’re in line with the control group’s migration rate.</p>
 </div>
-<div id="question-what-is-the-underlying-migration-rate-in-the-control-group-and-how-might-this-change-our-interpretation-of-the-results" class="section level2" number="3.5">
-<h2 number="3.5"><span class="header-section-number">3.5</span> <strong>Question: What is the underlying migration rate in the control group and how might this change our interpretation of the results? </strong></h2>
-<p><strong>Answer:</strong></p>
+<div id="question-7-what-is-the-underlying-migration-rate-in-the-control-group-and-how-might-this-change-our-interpretation-of-the-results" class="section level2" number="3.5">
+<h2 number="3.5"><span class="header-section-number">3.5</span> <strong>Question 7: What is the underlying migration rate in the control group and how might this change our interpretation of the results? </strong></h2>
+<p><strong>Answer:</strong> Although my table’s results aren’t accurate, the migration rate in the control group is ~36% which means when we look at the effect of treatment, we must look at the change in migration rate with and without treatment relative to a baseline of 36%.</p>
 </div>
-<div id="question-replicate-the-results-presented-in-the-third-row-of-the-first-three-columns-of-table-3.-present-them-in-a-table-and-interpret-these-results." class="section level2" number="3.6">
-<h2 number="3.6"><span class="header-section-number">3.6</span> <strong>Question: Replicate the results presented in the third row of the first three columns of table 3. Present them in a table and interpret these results. </strong></h2>
-<p>Note 1: The authors elect to drop one household observation because the reported value of total fish consumed in the household is very high.</p>
-<p>Note 2: To replicate the standard errors in the paper you will need to cluster your standard errors at the village level. We will discuss clustering later in the semester. Using <code>felm</code> you can specify the level of clustering (<code>clustervariable</code>) using the following command:</p>
-<p><code>reg&lt;-felm(Y~x1|fevariables|(ivfirststage)|clustervariable, dataname)</code></p>
-<p>where you can replace fevariables and ivfirststage with 0 if you are not using fixed effects or an instrument.</p>
+<div id="question-8-replicate-the-results-presented-in-the-third-row-of-the-first-three-columns-of-table-3.-present-them-in-a-table-and-interpret-these-results." class="section level2" number="3.6">
+<h2 number="3.6"><span class="header-section-number">3.6</span> <strong>Question 8: Replicate the results presented in the third row of the first three columns of table 3. Present them in a table and interpret these results.</strong></h2>
 <p><strong>Code:</strong></p>
-<p><strong>Answer:</strong></p>
+<pre class="r"><code>#Cluster package
+library(cluster)</code></pre>
+<pre><code>## Warning: package &#39;cluster&#39; was built under R version 4.1.2</code></pre>
+<pre class="r"><code>#Drop outlier
+max(Round2_f$total_fish)</code></pre>
+<pre><code>## [1] 16359.82</code></pre>
+<pre class="r"><code>Round2_f_sub &lt;- Round2_f[-c(92),]
+max(Round2_f_sub$total_fish)</code></pre>
+<pre><code>## [1] 2194.345</code></pre>
+<pre class="r"><code>#Model
+r8&lt;-felm(average_exp2~cash+credit+info|upazila|0|village, data=Round2_f_sub)
+summary(r8)</code></pre>
+<pre><code>## 
+## Call:
+##    felm(formula = average_exp2 ~ cash + credit + info | upazila |      0 | village, data = Round2_f_sub) 
+## 
+## Residuals:
+##    Min     1Q Median     3Q    Max 
+## -869.5 -259.0  -74.3  166.5 6362.4 
+## 
+## Coefficients:
+##        Estimate Cluster s.e. t value Pr(&gt;|t|)   
+## cash      96.57        34.61   2.790  0.00532 **
+## credit    76.74        33.65   2.281  0.02267 * 
+## info      38.52        50.98   0.756  0.44994   
+## ---
+## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1
+## 
+## Residual standard error: 452.1 on 1852 degrees of freedom
+##   (37 observations deleted due to missingness)
+## Multiple R-squared(full model): 0.04444   Adjusted R-squared: 0.03618 
+## Multiple R-squared(proj model): 0.005255   Adjusted R-squared: -0.003339 
+## F-statistic(full model, *iid*):5.383 on 16 and 1852 DF, p-value: 2.549e-11 
+## F-statistic(proj model): 2.818 on 3 and 99 DF, p-value: 0.04293</code></pre>
+<pre class="r"><code>#Save cluster robust standard errors
+cluster_se8 &lt;- as.vector(summary(r8,cluster = c(&quot;village&quot;))$coefficients[,&quot;Cluster s.e.&quot;])
+
+stargazer(r8, type=&quot;html&quot;, header=FALSE, title=&quot;Effects of Migration on Consumption Among Remaining Household Members&quot;, 
+                     style=&quot;qje&quot;, 
+                     se = list(r8$cluster_se8),
+                     covariate.labels = c(&quot;Cash&quot;, &quot;Credit&quot;, &quot;Info&quot;),
+                     dep.var.labels.include = FALSE,
+                     omit = &quot;Constant&quot;,
+                     column.labels = c(&quot;Total consumption&quot;))</code></pre>
+<table style="text-align:center">
+<caption>
+<strong>Effects of Migration on Consumption Among Remaining Household Members</strong>
+</caption>
+<tr>
+<td colspan="2" style="border-bottom: 1px solid black">
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+</td>
+<td>
+Total consumption
+</td>
+</tr>
+<tr>
+<td colspan="2" style="border-bottom: 1px solid black">
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+Cash
+</td>
+<td>
+96.566<sup>***</sup>
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+</td>
+<td>
+(34.610)
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+</td>
+<td>
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+Credit
+</td>
+<td>
+76.743<sup>**</sup>
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+</td>
+<td>
+(33.646)
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+</td>
+<td>
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+Info
+</td>
+<td>
+38.521
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+</td>
+<td>
+(50.975)
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+</td>
+<td>
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+<em>N</em>
+</td>
+<td>
+1,869
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+R<sup>2</sup>
+</td>
+<td>
+0.044
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+Adjusted R<sup>2</sup>
+</td>
+<td>
+0.036
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+Residual Std. Error
+</td>
+<td>
+452.094 (df = 1852)
+</td>
+</tr>
+<tr>
+<td colspan="2" style="border-bottom: 1px solid black">
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+<em>Notes:</em>
+</td>
+<td style="text-align:right">
+<sup>***</sup>Significant at the 1 percent level.
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+</td>
+<td style="text-align:right">
+<sup>**</sup>Significant at the 5 percent level.
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+</td>
+<td style="text-align:right">
+<sup>*</sup>Significant at the 10 percent level.
+</td>
+</tr>
+</table>
+<p><strong>Answer:</strong> This table shows that incentive treatments (cash and credit), which induced more migration during monga, resulted in significant increases in household consumption among remaining members in the villages. Households in the cash treatment group spent 96.57 more taka/capita on average (at the 99% confidence level), households in the credit treatment group spent 76.74 more taka/capita on average (at the 95% confidence level). The caveat with these results is that we’d expect consumption per capita to increase given there’s one less person in the household during monga (the migrant).</p>
 </div>
-<div id="question-what-happens-to-these-estimates-if-you-drop-the-fixed-effects-from-the-specification.-why" class="section level2" number="3.7">
-<h2 number="3.7"><span class="header-section-number">3.7</span> <strong>Question: What happens to these estimates if you drop the fixed effects from the specification. Why? </strong></h2>
+<div id="question-9-what-happens-to-these-estimates-if-you-drop-the-fixed-effects-from-the-specification.-why" class="section level2" number="3.7">
+<h2 number="3.7"><span class="header-section-number">3.7</span> <strong>Question 9: What happens to these estimates if you drop the fixed effects from the specification. Why? </strong></h2>
 <p><strong>Code:</strong></p>
-<p><strong>Answer:</strong></p>
+<pre class="r"><code>r9&lt;-felm(average_exp2~cash+credit+info|0|0|village, data=Round2_f_sub)
+summary(r9)</code></pre>
+<pre><code>## 
+## Call:
+##    felm(formula = average_exp2 ~ cash + credit + info | 0 | 0 |      village, data = Round2_f_sub) 
+## 
+## Residuals:
+##    Min     1Q Median     3Q    Max 
+## -865.5 -270.2  -78.0  174.8 6507.8 
+## 
+## Coefficients:
+##             Estimate Cluster s.e. t value Pr(&gt;|t|)    
+## (Intercept)  954.133       30.696  31.084   &lt;2e-16 ***
+## cash          88.051       38.795   2.270   0.0233 *  
+## credit        49.136       39.585   1.241   0.2147    
+## info          -6.745       57.699  -0.117   0.9069    
+## ---
+## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1
+## 
+## Residual standard error: 459.3 on 1865 degrees of freedom
+##   (37 observations deleted due to missingness)
+## Multiple R-squared(full model): 0.006787   Adjusted R-squared: 0.005189 
+## Multiple R-squared(proj model): 0.006787   Adjusted R-squared: 0.005189 
+## F-statistic(full model, *iid*):4.248 on 3 and 1865 DF, p-value: 0.005323 
+## F-statistic(proj model): 2.184 on 3 and 99 DF, p-value: 0.09466</code></pre>
+<pre class="r"><code>cluster_se9 &lt;- as.vector(summary(r9,cluster = c(&quot;village&quot;))$coefficients[,&quot;Cluster s.e.&quot;])</code></pre>
+<pre class="r"><code>stargazer(r8, r9, type=&quot;html&quot;, header=FALSE, title=&quot;Effects of Migration on Consumption Among Remaining Household Members in 2008&quot;, 
+                     style=&quot;qje&quot;, 
+                     se = list(r8$cluster_se8, r9$cluster_se9),
+                     covariate.labels = c(&quot;Cash&quot;, &quot;Credit&quot;, &quot;Info&quot;),
+                     dep.var.labels.include = FALSE,
+                     omit = &quot;Constant&quot;,
+                     add.lines = list(c(&quot;Sub-District FE&quot;, &quot;Yes&quot;, &quot;No&quot;)),
+                     column.labels = c(&quot;Total consumption&quot;))</code></pre>
+<table style="text-align:center">
+<caption>
+<strong>Effects of Migration on Consumption Among Remaining Household Members in 2008</strong>
+</caption>
+<tr>
+<td colspan="3" style="border-bottom: 1px solid black">
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+</td>
+<td>
+Total consumption
+</td>
+<td>
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+</td>
+<td>
+(1)
+</td>
+<td>
+(2)
+</td>
+</tr>
+<tr>
+<td colspan="3" style="border-bottom: 1px solid black">
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+Cash
+</td>
+<td>
+96.566<sup>***</sup>
+</td>
+<td>
+88.051<sup>**</sup>
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+</td>
+<td>
+(34.610)
+</td>
+<td>
+(38.795)
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+</td>
+<td>
+</td>
+<td>
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+Credit
+</td>
+<td>
+76.743<sup>**</sup>
+</td>
+<td>
+49.136
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+</td>
+<td>
+(33.646)
+</td>
+<td>
+(39.585)
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+</td>
+<td>
+</td>
+<td>
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+Info
+</td>
+<td>
+38.521
+</td>
+<td>
+-6.745
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+</td>
+<td>
+(50.975)
+</td>
+<td>
+(57.699)
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+</td>
+<td>
+</td>
+<td>
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+Sub-District FE
+</td>
+<td>
+Yes
+</td>
+<td>
+No
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+<em>N</em>
+</td>
+<td>
+1,869
+</td>
+<td>
+1,869
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+R<sup>2</sup>
+</td>
+<td>
+0.044
+</td>
+<td>
+0.007
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+Adjusted R<sup>2</sup>
+</td>
+<td>
+0.036
+</td>
+<td>
+0.005
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+Residual Std. Error
+</td>
+<td>
+452.094 (df = 1852)
+</td>
+<td>
+459.305 (df = 1865)
+</td>
+</tr>
+<tr>
+<td colspan="3" style="border-bottom: 1px solid black">
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+<em>Notes:</em>
+</td>
+<td colspan="2" style="text-align:right">
+<sup>***</sup>Significant at the 1 percent level.
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+</td>
+<td colspan="2" style="text-align:right">
+<sup>**</sup>Significant at the 5 percent level.
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+</td>
+<td colspan="2" style="text-align:right">
+<sup>*</sup>Significant at the 10 percent level.
+</td>
+</tr>
+</table>
+<p><strong>Answer:</strong> When missing the sub-district control, our treatment coefficients are downwardly biased.</p>
 </div>
-<div id="question-replicate-the-results-presented-in-the-third-row-of-the-fourth-and-fifth-columns-of-table-3.-what-happens-to-the-coefficient-and-standard-errors-is-this-surprising-what-does-this-tell-us" class="section level2" number="3.8">
-<h2 number="3.8"><span class="header-section-number">3.8</span> <strong>Question: Replicate the results presented in the third row of the fourth and fifth columns of table 3. What happens to the coefficient and standard errors? Is this surprising? What does this tell us?</strong></h2>
+<div id="question-10-replicate-the-results-presented-in-the-third-row-of-the-fourth-and-fifth-columns-of-table-3.-what-happens-to-the-coefficient-and-standard-errors-is-this-surprising-what-does-this-tell-us" class="section level2" number="3.8">
+<h2 number="3.8"><span class="header-section-number">3.8</span> <strong>Question 10: Replicate the results presented in the third row of the fourth and fifth columns of table 3. What happens to the coefficient and standard errors? Is this surprising? What does this tell us?</strong></h2>
 <p>Hint: You will need to construct a new variable to run these estimates.</p>
 <p><strong>Code:</strong></p>
-<p><strong>Answer:</strong></p>
+<pre class="r"><code>#Constructing ITT variable
+Round2_f_sub$ITT&lt;-0
+Round2_f_sub$ITT[Round2_f_sub$cash==&quot;1&quot;]&lt;-1
+Round2_f_sub$ITT[Round2_f_sub$credit==&quot;1&quot;]&lt;-1
+
+#Model with ITT
+r10 &lt;- felm(average_exp2~ITT|upazila|0|village, data=Round2_f_sub)
+cluster_se10 &lt;- as.vector(summary(r10,cluster = c(&quot;village&quot;))$coefficients[,&quot;Cluster s.e.&quot;])
+
+#Model with ITT and following controls: household education, proxy for income, pctg of total expenditure on food, number of adult males, number of children, lacked access to credit, borrowing, total household expenditures/capita at baseline, expectations of support
+r11 &lt;- felm(average_exp2 ~ ITT + lit + walls_good + subsistencer1 + num_adltmalesr1 + num_childrenr1 + bankedr1 + exp_total_pc_r1 + monga + dhaka_network + constrainedr1 + bankedr1|upazila|0|village, data=Round2_f_sub)
+cluster_se11 &lt;- as.vector(summary(r11,cluster = c(&quot;village&quot;))$coefficients[,&quot;Cluster s.e.&quot;])</code></pre>
+<p>Display results</p>
+<pre class="r"><code>stargazer(r10, r11, type=&quot;html&quot;, header=FALSE, title=&quot;Effects of Migration on Consumption Among Remaining Household Members&quot;, 
+                     style=&quot;qje&quot;, 
+                     se = list(r10$cluster_se10, r11$cluster_se11),
+                     covariate.labels = c(&quot;Intent to Treat&quot;),
+                     dep.var.labels.include = FALSE,
+                     omit = c(&quot;Constant&quot;, &quot;lit&quot;, &quot;walls_good&quot;, &quot;subsistencer1&quot;, &quot;num_adltmalesr1&quot;, &quot;num_childrenr1&quot;, &quot;bankedr1&quot;, &quot;exp_total_pc_r1&quot;, &quot;monga&quot;, &quot;dhaka_network&quot;, &quot;constrainedr1&quot;),
+                     column.labels = c(&quot;Total consumption&quot;, &quot;Total consumption&quot;),
+                     add.lines = list(c(&quot;Additional controls&quot;, &quot;No&quot;, &quot;Yes&quot;)))</code></pre>
+<table style="text-align:center">
+<caption>
+<strong>Effects of Migration on Consumption Among Remaining Household Members</strong>
+</caption>
+<tr>
+<td colspan="3" style="border-bottom: 1px solid black">
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+</td>
+<td>
+Total consumption
+</td>
+<td>
+Total consumption
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+</td>
+<td>
+(1)
+</td>
+<td>
+(2)
+</td>
+</tr>
+<tr>
+<td colspan="3" style="border-bottom: 1px solid black">
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+Intent to Treat
+</td>
+<td>
+68.359<sup>**</sup>
+</td>
+<td>
+56.041<sup>*</sup>
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+</td>
+<td>
+(30.593)
+</td>
+<td>
+(28.685)
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+</td>
+<td>
+</td>
+<td>
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+Additional controls
+</td>
+<td>
+No
+</td>
+<td>
+Yes
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+<em>N</em>
+</td>
+<td>
+1,869
+</td>
+<td>
+1,855
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+R<sup>2</sup>
+</td>
+<td>
+0.044
+</td>
+<td>
+0.141
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+Adjusted R<sup>2</sup>
+</td>
+<td>
+0.036
+</td>
+<td>
+0.130
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+Residual Std. Error
+</td>
+<td>
+452.023 (df = 1854)
+</td>
+<td>
+430.026 (df = 1830)
+</td>
+</tr>
+<tr>
+<td colspan="3" style="border-bottom: 1px solid black">
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+<em>Notes:</em>
+</td>
+<td colspan="2" style="text-align:right">
+<sup>***</sup>Significant at the 1 percent level.
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+</td>
+<td colspan="2" style="text-align:right">
+<sup>**</sup>Significant at the 5 percent level.
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+</td>
+<td colspan="2" style="text-align:right">
+<sup>*</sup>Significant at the 10 percent level.
+</td>
+</tr>
+</table>
+<p><strong>Answer:</strong> Given that the significance and magnitude of the ITT coefficient doesn’t change much when controlling for baseline characteristics, the results/relationship are robust between ITT and total consumption.</p>
 </div>
-<div id="question-why-is-the-header-of-the-first-five-columns-of-table-3-itt.-what-is-meant-by-this-and-what-does-this-tell-us-about-how-we-should-interpret-these-results" class="section level2" number="3.9">
-<h2 number="3.9"><span class="header-section-number">3.9</span> <strong>Question: Why is the header of the first five columns of table 3 “ITT”. What is meant by this and what does this tell us about how we should interpret these results?</strong></h2>
-<p><strong>Answer:</strong></p>
+<div id="question-11-why-is-the-header-of-the-first-five-columns-of-table-3-itt.-what-is-meant-by-this-and-what-does-this-tell-us-about-how-we-should-interpret-these-results" class="section level2" number="3.9">
+<h2 number="3.9"><span class="header-section-number">3.9</span> <strong>Question 11: Why is the header of the first five columns of table 3 “ITT”. What is meant by this and what does this tell us about how we should interpret these results?</strong></h2>
+<p><strong>Answer:</strong> The header represents the relationship between households assigned to some treatment and their food consumption (excludes households in the control group). ITT stands for “intent to treat” which has a different meaning than the effect of being treated. Instead, its the effect of being assigned to the treatment group which means some households may not comply (and their actions are accounted for in the average ITT effect).</p>
 </div>
-<div id="question-we-are-interested-in-estimating-how-migration-affects-total-expenditures-for-the-households-that-were-induced-to-migrate-by-the-cash-and-credit-treatments-as-follows" class="section level2" number="3.10">
-<h2 number="3.10"><span class="header-section-number">3.10</span> <strong>Question: We are interested in estimating how migration affects total expenditures for the households that were induced to migrate by the cash and credit treatments as follows,</strong></h2>
+<div id="question-12-we-are-interested-in-estimating-how-migration-affects-total-expenditures-for-the-households-that-were-induced-to-migrate-by-the-cash-and-credit-treatments-as-follows" class="section level2" number="3.10">
+<h2 number="3.10"><span class="header-section-number">3.10</span> <strong>Question 12: We are interested in estimating how migration affects total expenditures for the households that were induced to migrate by the cash and credit treatments as follows,</strong></h2>
 <p><span class="math display">\[
 TotExp_{ivj}=\alpha+\beta_1Migrate_{ivj}+\theta X_{ivj}+\varphi_j+\nu_{ivj}
 \]</span> <strong>where <span class="math inline">\(Migrate_{ivj}\)</span> is dummy indicator for if a member of household i in village v in subdistrict j migrated, <span class="math inline">\(X_{ivj}\)</span> is a vector of control variables and <span class="math inline">\(\varphi_j\)</span> are the subdistrict fixed effects. However it is not possible to identify in the data which households were induced by the treatment vs those who would have migrated either way. Furthermore, there is likely substantial selection between the households that select into migration versus those that do not. Propose a source of exogenous variation that can be used as an instrument to isolate “good” exogenous variation in migration. </strong></p>
-<p><strong>Answer:</strong></p>
+<p><strong>Answer:</strong> We know the assignment of treatment was random given the controlled experiment. This ITT variable can be a source of good, exogenous variation on the action of migrating (the true action/treatment we’re trying to capture).</p>
 </div>
-<div id="question-what-is-the-first-stage-specification" class="section level2" number="3.11">
-<h2 number="3.11"><span class="header-section-number">3.11</span> <strong>Question: What is the first stage specification?</strong></h2>
-<p><strong>Answer:</strong></p>
+<div id="question-13-what-is-the-first-stage-specification" class="section level2" number="3.11">
+<h2 number="3.11"><span class="header-section-number">3.11</span> <strong>Question 13: What is the first stage specification?</strong></h2>
+<p><strong>Answer:</strong> We must determine whether there’s a strong relationship between ITT and migration. <span class="math display">\[
+Migrant_{ivj}=\alpha+\beta_1ITT_{ivj}+\nu_{ivj}+\epsilon_{ivj}
+\]</span></p>
+<p>Where migrant is a binary variable, beta is the indicator for whether or not household was assigned to treatment (incentive) and v represents baseline controls.</p>
 </div>
-<div id="question-estimate-the-first-stage-and-check-that-you-have-a-strong-instrument-for-migration." class="section level2" number="3.12">
-<h2 number="3.12"><span class="header-section-number">3.12</span> <strong>Question: Estimate the first stage and check that you have a strong instrument for migration.</strong></h2>
+<div id="question-14-estimate-the-first-stage-and-check-that-you-have-a-strong-instrument-for-migration." class="section level2" number="3.12">
+<h2 number="3.12"><span class="header-section-number">3.12</span> <strong>Question 14: Estimate the first stage and check that you have a strong instrument for migration.</strong></h2>
 <p>Note: The first stage results reported in the paper appendix may differ slightly as explained in the table footnote.</p>
 <p><strong>Code:</strong></p>
-<p><strong>Answer:</strong></p>
+<pre class="r"><code>#Checking strong first stage
+r12 &lt;- felm(data=Round2_f_sub, migrant ~ ITT)
+r13 &lt;- felm(data=Round2_f_sub, migrant ~ cash)
+r14 &lt;- felm(data=Round2_f_sub, migrant ~ credit)
+
+#Displaying results
+stargazer(r12, r13, r14, type=&quot;html&quot;, header=FALSE, title=&quot;Relationship between Treatment Assignment &amp; Migration&quot;, 
+                     style=&quot;qje&quot;, 
+                     se = list(r12$rse, r13$rse, r14$rse),
+                     covariate.labels = c(&quot;Intent to treat&quot;, &quot;Cash&quot;, &quot;Credit&quot;, &quot;Info&quot;),
+                     dep.var.labels.include = FALSE,
+                     omit = &quot;Constant&quot;,
+                     column.labels = c(&quot;Migration&quot;, &quot;Migration&quot;, &quot;Migration&quot;))</code></pre>
+<table style="text-align:center">
+<caption>
+<strong>Relationship between Treatment Assignment &amp; Migration</strong>
+</caption>
+<tr>
+<td colspan="4" style="border-bottom: 1px solid black">
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+</td>
+<td>
+Migration
+</td>
+<td>
+Migration
+</td>
+<td>
+Migration
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+</td>
+<td>
+(1)
+</td>
+<td>
+(2)
+</td>
+<td>
+(3)
+</td>
+</tr>
+<tr>
+<td colspan="4" style="border-bottom: 1px solid black">
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+Intent to treat
+</td>
+<td>
+0.220<sup>***</sup>
+</td>
+<td>
+</td>
+<td>
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+</td>
+<td>
+(0.024)
+</td>
+<td>
+</td>
+<td>
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+</td>
+<td>
+</td>
+<td>
+</td>
+<td>
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+Cash
+</td>
+<td>
+</td>
+<td>
+0.127<sup>***</sup>
+</td>
+<td>
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+</td>
+<td>
+</td>
+<td>
+(0.024)
+</td>
+<td>
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+</td>
+<td>
+</td>
+<td>
+</td>
+<td>
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+Credit
+</td>
+<td>
+</td>
+<td>
+</td>
+<td>
+0.085<sup>***</sup>
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+</td>
+<td>
+</td>
+<td>
+</td>
+<td>
+(0.025)
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+</td>
+<td>
+</td>
+<td>
+</td>
+<td>
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+<em>N</em>
+</td>
+<td>
+1,870
+</td>
+<td>
+1,870
+</td>
+<td>
+1,870
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+R<sup>2</sup>
+</td>
+<td>
+0.042
+</td>
+<td>
+0.015
+</td>
+<td>
+0.006
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+Adjusted R<sup>2</sup>
+</td>
+<td>
+0.041
+</td>
+<td>
+0.015
+</td>
+<td>
+0.006
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+Residual Std. Error (df = 1868)
+</td>
+<td>
+0.490
+</td>
+<td>
+0.496
+</td>
+<td>
+0.499
+</td>
+</tr>
+<tr>
+<td colspan="4" style="border-bottom: 1px solid black">
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+<em>Notes:</em>
+</td>
+<td colspan="3" style="text-align:right">
+<sup>***</sup>Significant at the 1 percent level.
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+</td>
+<td colspan="3" style="text-align:right">
+<sup>**</sup>Significant at the 5 percent level.
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+</td>
+<td colspan="3" style="text-align:right">
+<sup>*</sup>Significant at the 10 percent level.
+</td>
+</tr>
+</table>
+<p><strong>Answer:</strong> The first stages are strong for each of the IVs (ITT, cash, and credit all against their relationship to migration) given the statistical significance. The magnitude of the coefficients is also helpful when we rely on the exogenous variation’s impact on independent variable migration (and ultimately its impact on total consumption).</p>
 </div>
-<div id="question-use-your-instrument-to-estimate-the-late-local-average-treatment-effect-the-impact-of-migration-on-total-consumption-for-those-induced-to-migrate-by-the-treatment-as-in-columns-6-and-7-of-table-3-in-the-paper.-interpret-your-results." class="section level2" number="3.13">
-<h2 number="3.13"><span class="header-section-number">3.13</span> <strong>Question: Use your instrument to estimate the LATE (Local Average Treatment Effect), the impact of migration on total consumption for those induced to migrate by the treatment, as in columns 6 and 7 of table 3 in the paper. Interpret your results. </strong></h2>
+<div id="question-15-use-your-instrument-to-estimate-the-late-local-average-treatment-effect-the-impact-of-migration-on-total-consumption-for-those-induced-to-migrate-by-the-treatment-as-in-columns-6-and-7-of-table-3-in-the-paper.-interpret-your-results." class="section level2" number="3.13">
+<h2 number="3.13"><span class="header-section-number">3.13</span> <strong>Question 15: Use your instrument to estimate the LATE (Local Average Treatment Effect), the impact of migration on total consumption for those induced to migrate by the treatment, as in columns 6 and 7 of table 3 in the paper. Interpret your results. </strong></h2>
 <p>Note: if you wish to replicate the paper’s coefficients exactly, you will need to use multiple instruments, one for each treatment arm.</p>
 <p><strong>Code:</strong></p>
-<p><strong>Answer:</strong></p>
+<pre class="r"><code>r15 &lt;- felm(data=Round2_f_sub, average_exp2 ~ 1 |upazila|(migrant~ITT)|village) 
+r16 &lt;- felm(data=Round2_f_sub, average_exp2 ~ walls_good + subsistencer1 + num_adltmalesr1 + num_childrenr1 + bankedr1 + exp_total_pc_r1 + monga + dhaka_network + constrainedr1 + bankedr1|upazila|(migrant~ITT + walls_good + subsistencer1 + num_adltmalesr1 + num_childrenr1 + bankedr1 + exp_total_pc_r1 + monga + dhaka_network + constrainedr1 + bankedr1)|village)</code></pre>
+<pre><code>## Warning in chol.default(mat, pivot = TRUE, tol = tol): the matrix is either
+## rank-deficient or indefinite</code></pre>
+<pre class="r"><code>stargazer(r15, r16, type=&quot;html&quot;, header=FALSE, title=&quot;Local Average Treatment Effect of Migration on Total Consumption&quot;, 
+                     style=&quot;qje&quot;, 
+                     se = list(r15$rse, r16$rse),
+                     dep.var.labels.include = TRUE,
+                     omit = c(&quot;upazila&quot;, &quot;Constant&quot;, &quot;walls_good&quot;, &quot;subsistencer1&quot;, &quot;num_adltmalesr1&quot;, &quot;num_childrenr1&quot;, &quot;bankedr1&quot;, &quot;exp_total_pc_r1&quot;, &quot;monga&quot;, &quot;dhaka_network&quot;, &quot;constrainedr1&quot;, &quot;bankedr1&quot;),
+                     covariate.labels = c(&quot;IV&quot;),
+                     add.lines = list(c(&quot;Controls&quot;, &quot;No&quot;, &quot;Yes&quot;)),
+                     column.labels = c(&quot;Total Consumption&quot;, &quot;Total Consumption&quot;))</code></pre>
+<table style="text-align:center">
+<caption>
+<strong>Local Average Treatment Effect of Migration on Total Consumption</strong>
+</caption>
+<tr>
+<td colspan="3" style="border-bottom: 1px solid black">
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+</td>
+<td colspan="2">
+average_exp2
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+</td>
+<td>
+Total Consumption
+</td>
+<td>
+Total Consumption
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+</td>
+<td>
+(1)
+</td>
+<td>
+(2)
+</td>
+</tr>
+<tr>
+<td colspan="3" style="border-bottom: 1px solid black">
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+IV
+</td>
+<td>
+374.857<sup>***</sup>
+</td>
+<td>
+308.998<sup>**</sup>
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+</td>
+<td>
+(134.359)
+</td>
+<td>
+(127.000)
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+</td>
+<td>
+</td>
+<td>
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+Controls
+</td>
+<td>
+No
+</td>
+<td>
+Yes
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+<em>N</em>
+</td>
+<td>
+1,867
+</td>
+<td>
+1,853
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+R<sup>2</sup>
+</td>
+<td>
+-0.009
+</td>
+<td>
+0.139
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+Adjusted R<sup>2</sup>
+</td>
+<td>
+-0.017
+</td>
+<td>
+0.128
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+Residual Std. Error
+</td>
+<td>
+464.584 (df = 1852)
+</td>
+<td>
+430.683 (df = 1829)
+</td>
+</tr>
+<tr>
+<td colspan="3" style="border-bottom: 1px solid black">
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+<em>Notes:</em>
+</td>
+<td colspan="2" style="text-align:right">
+<sup>***</sup>Significant at the 1 percent level.
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+</td>
+<td colspan="2" style="text-align:right">
+<sup>**</sup>Significant at the 5 percent level.
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+</td>
+<td colspan="2" style="text-align:right">
+<sup>*</sup>Significant at the 10 percent level.
+</td>
+</tr>
+</table>
+<p><strong>Answer:</strong> These regressions show the effect of migration (only for those households that were induced to migrate by the RCT’s intervention) on consumption. The coefficient for the model without any controls shows that there was a 374.86 increase in taka spent/capita for households that had an individual migrate (on average). When controlling for household socio-economic characteristics, this effect is still significant and robust: there was a 308.998 increase in taka spent/capita for households that had an individual migrate (on average).</p>
 </div>
-<div id="question-why-are-these-results-different-from-those-in-columns-4-and-5-of-the-paper" class="section level2" number="3.14">
-<h2 number="3.14"><span class="header-section-number">3.14</span> <strong>Question: Why are these results different from those in columns 4 and 5 of the paper? </strong></h2>
-<p><strong>Answer:</strong></p>
+<div id="question-16-why-are-these-results-different-from-those-in-columns-4-and-5-of-the-paper" class="section level2" number="3.14">
+<h2 number="3.14"><span class="header-section-number">3.14</span> <strong>Question 16: Why are these results different from those in columns 4 and 5 of the paper?</strong></h2>
+<p><strong>Answer:</strong> The LATE results are different from the previous regressions (ITT) because they estimate the effect of treatment (migration) and not just the effect of being in the treatment group (which is susceptible to non-compliers).</p>
 </div>
-<div id="question-why-is-this-value-particularly-relevant-for-policy-decisions-in-the-context-of-this-experiment." class="section level2" number="3.15">
-<h2 number="3.15"><span class="header-section-number">3.15</span> <strong>Question: Why is this value particularly relevant for policy decisions in the context of this experiment.</strong></h2>
-<p><strong>Answer:</strong></p>
+<div id="question-17-why-is-this-value-particularly-relevant-for-policy-decisions-in-the-context-of-this-experiment." class="section level2" number="3.15">
+<h2 number="3.15"><span class="header-section-number">3.15</span> <strong>Question 17: Why is this value particularly relevant for policy decisions in the context of this experiment.</strong></h2>
+<p><strong>Answer:</strong> If policy makers were to apply the findings of this research in the real world, they’d likely be concerned with both the LATE and ITT estimators. The LATE will help policy makers determine whether migration is a worthwhile tool to help bring more economic stability to households vulnerable to poverty during monga season. The ITT estimator provides an idea of how public assistance in support of migration may impact behavior and outcomes for households, taking into account that not everyone will behave as the program would like.</p>
 </div>
-<div id="question-suppose-a-policy-maker-found-these-results-so-compelling-that-they-decided-to-make-this-a-national-policy.-how-would-general-equilibrium-effects-potentially-change-the-impacts-of-this-policy-if-it-was-implemented-in-a-very-large-scale-way" class="section level2" number="3.16">
-<h2 number="3.16"><span class="header-section-number">3.16</span> <strong>Question: Suppose a policy maker found these results so compelling that they decided to make this a national policy. How would general equilibrium effects potentially change the impacts of this policy if it was implemented in a very large scale way?</strong></h2>
-<p><strong>Answer:</strong></p>
+<div id="question-18-suppose-a-policy-maker-found-these-results-so-compelling-that-they-decided-to-make-this-a-national-policy.-how-would-general-equilibrium-effects-potentially-change-the-impacts-of-this-policy-if-it-was-implemented-in-a-very-large-scale-way" class="section level2" number="3.16">
+<h2 number="3.16"><span class="header-section-number">3.16</span> <strong>Question 18: Suppose a policy maker found these results so compelling that they decided to make this a national policy. How would general equilibrium effects potentially change the impacts of this policy if it was implemented in a very large scale way?</strong></h2>
+<p><strong>Answer:</strong> If a national policy was implemented, mass migration could affect the amount of jobs available in cities (whereas with an RCT the volume of individuals migrating doesn’t impact the GE) which could greatly impact the effectivity of temporary migration into cities in order to earn more money when jobs are scarce in local villages.</p>
 </div>
-<div id="question-one-major-concern-that-is-often-brought-up-in-discussions-about-rcts-is-the-problem-of-external-validity.-it-is-not-always-clear-how-informative-the-findings-from-a-small-scale-research-project-in-one-context-are-for-policy-makers-working-on-a-different-scale-and-in-different-contexts.-what-are-your-thoughts-on-the-external-validity-of-this-particular-project-and-rcts-in-general" class="section level2" number="3.17">
-<h2 number="3.17"><span class="header-section-number">3.17</span> <strong>Question: One major concern that is often brought up in discussions about RCT’s is the problem of external validity. It is not always clear how informative the findings from a small scale research project in one context are for policy makers working on a different scale and in different contexts. What are your thoughts on the external validity of this particular project and RCT’s in general? </strong></h2>
-<p><strong>Answer:</strong></p>
+<div id="question-19-one-major-concern-that-is-often-brought-up-in-discussions-about-rcts-is-the-problem-of-external-validity.-it-is-not-always-clear-how-informative-the-findings-from-a-small-scale-research-project-in-one-context-are-for-policy-makers-working-on-a-different-scale-and-in-different-contexts.-what-are-your-thoughts-on-the-external-validity-of-this-particular-project-and-rcts-in-general" class="section level2" number="3.17">
+<h2 number="3.17"><span class="header-section-number">3.17</span> <strong>Question 19: One major concern that is often brought up in discussions about RCT’s is the problem of external validity. It is not always clear how informative the findings from a small scale research project in one context are for policy makers working on a different scale and in different contexts. What are your thoughts on the external validity of this particular project and RCT’s in general? </strong></h2>
+<p><strong>Answer:</strong> I think if this RCT was to be rolled out on a national level the same results may be more difficult to achieve (like all RCT applications) for a few reasons: NGOs may have more resources, less beauracy, and benefit from a smaller scale to manage these trials compared to government agencies (aka pilot bias)</p>
 </div>
 </div>
 <div id="submission-instructions" class="section level1" number="4">
